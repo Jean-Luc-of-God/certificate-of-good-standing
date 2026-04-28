@@ -1,0 +1,265 @@
+@model CertificatePortal.Models.ViewModels.CertificateSearchViewModel
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+@{
+    ViewData["Title"] = "Search";
+    bool useMockData = Configuration.GetValue<bool>("UseMockData");
+}
+
+<style>
+    .mock-banner {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeeba;
+        padding: 0.75rem 1.25rem;
+        text-align: center;
+        margin-bottom: 1rem;
+        border-radius: 4px;
+        font-weight: 600;
+    }
+
+    .hero {
+        text-align: center;
+        padding: 3rem 1rem;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero p {
+        font-size: 1.1rem;
+        color: #666;
+    }
+
+    .search-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        max-width: 800px;
+        margin: 0 auto 3rem;
+    }
+
+    .search-form {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 0.8rem 1rem;
+        border: 2px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+    }
+
+    .btn {
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.3s, transform 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .btn:active {
+        transform: scale(0.98);
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: var(--accent-color);
+    }
+
+    .btn-outline {
+        border: 2px solid var(--primary-color);
+        color: var(--primary-color);
+        background: transparent;
+    }
+
+    .btn-gold {
+        background-color: var(--accent-color);
+        color: var(--primary-color);
+    }
+
+    .btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    .results-table-container {
+        overflow-x: auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    th, td {
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    th {
+        background-color: #f9f9f9;
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+
+    .actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .status-badge {
+        padding: 0.2rem 0.6rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-approved { background: #e8f5e9; color: #2e7d32; }
+    .status-pending { background: #fff3e0; color: #ef6c00; }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #666;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        display: block;
+        margin-bottom: 1rem;
+    }
+
+    .spinner {
+        width: 1.2rem;
+        height: 1.2rem;
+        border: 3px solid rgba(200, 169, 81, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--accent-color);
+        animation: spin 1s ease-in-out infinite;
+        display: none;
+    }
+
+    @@keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    @@media (max-width: 600px) {
+        .search-form {
+            flex-direction: column;
+        }
+    }
+</style>
+
+@if (useMockData)
+{
+    <div class="mock-banner">
+        ⚠️ Running in demo mode — not connected to live database
+    </div>
+}
+
+<div class="hero">
+    <h1>Adventist University of Central Africa</h1>
+    <p>Directorate for Admissions and Academic Records</p>
+    <p>Certificate of Good Standing Verification Portal</p>
+</div>
+
+<div class="search-card">
+    <form asp-action="Search" method="post" id="searchForm" class="search-form">
+        @Html.AntiForgeryToken()
+        <input type="text" name="Query" value="@Model.Query" placeholder="Enter Student ID or Full Name" class="search-input" required id="queryInput" />
+        <button type="submit" class="btn btn-primary" id="searchBtn">
+            <span class="btn-text">Search Records</span>
+            <div class="spinner" id="spinner"></div>
+        </button>
+    </form>
+</div>
+
+@if (Model.Results != null && Model.Results.Any())
+{
+    <div class="results-table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Student ID</th>
+                    <th>Faculty</th>
+                    <th>Major</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Results)
+                {
+                    <tr>
+                        <td><strong>@item.StudentName</strong></td>
+                        <td>@item.StudentID</td>
+                        <td>@item.Faculty</td>
+                        <td>@item.Major</td>
+                        <td>
+                            <span class="status-badge @(item.Status == "Approved" ? "status-approved" : "status-pending")">
+                                @item.Status
+                            </span>
+                        </td>
+                        <td class="actions">
+                            <a asp-action="Preview" asp-route-studentId="@item.StudentID" class="btn btn-outline">Preview</a>
+                            <a asp-action="Download" asp-route-studentId="@item.StudentID" class="btn btn-gold">Download .docx</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else if (!string.IsNullOrEmpty(Model.Query))
+{
+    <div class="empty-state">
+        <i>🔍</i>
+        <p>No student found with the ID or name "<strong>@Model.Query</strong>".</p>
+        <p>Please verify the information and try again.</p>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function (e) {
+            const input = document.getElementById('queryInput');
+            input.value = input.value.trim();
+
+            if (!input.value) {
+                e.preventDefault();
+                return;
+            }
+
+            const btn = document.getElementById('searchBtn');
+            const spinner = document.getElementById('spinner');
+            const btnText = btn.querySelector('.btn-text');
+
+            btn.disabled = true;
+            btnText.style.display = 'none';
+            spinner.style.display = 'block';
+        });
+    </script>
+}

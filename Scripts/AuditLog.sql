@@ -1,0 +1,8 @@
+CREATE TABLE [dbo].[AuditLog] (
+    Id INT IDENTITY PRIMARY KEY,
+    Action NVARCHAR(100),
+    StudentID NVARCHAR(100),
+    PerformedAt DATETIME2 DEFAULT GETUTCDATE(),
+    IPAddress NVARCHAR(50),
+    UserAgent NVARCHAR(500)
+);

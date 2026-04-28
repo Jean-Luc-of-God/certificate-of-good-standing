@@ -1,0 +1,37 @@
+/* print.css */
+body {
+    background-color: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+header, footer, .no-print, .preview-actions, .nav-links, .btn {
+    display: none !important;
+}
+
+main {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+}
+
+.preview-container {
+    max-width: 100% !important;
+    margin: 0 !important;
+}
+
+.certificate-card {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    min-height: auto !important;
+}
+
+/* Ensure background colors and images are printed */
+* {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+}
