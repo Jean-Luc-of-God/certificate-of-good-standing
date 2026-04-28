@@ -7,19 +7,23 @@ RUN dotnet publish "CertificatePortal/CertificatePortal.csproj" -c Release -o /a
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 
-# Install dependencies for Puppeteer (Chromium)
+# Install modern dependencies for Puppeteer (Chromium) on Debian 12
 RUN apt-get update && apt-get install -y \
-    libgconf-2-4 \
+    libnss3 \
+    libnspr4 \
     libatk1.0-0 \
     libatk-bridge2.0-0 \
-    libgdk-pixbuf2.0-0 \
-    libgtk-3-0 \
-    libgbm-dev \
-    libnss3-dev \
-    libxss-dev \
+    libcups2 \
+    libdrm2 \
+    libxkbcommon0 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxext6 \
+    libxfixes3 \
+    libxrandr2 \
+    libgbm1 \
     libasound2 \
     fonts-liberation \
-    libappindicator3-1 \
     libxdg-utils \
     wget \
     --no-install-recommends \
