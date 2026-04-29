@@ -84,7 +84,13 @@ namespace CertificatePortal.Controllers
             var record = await _repository.GetByStudentIdAsync(studentId);
             if (record == null) return NotFound();
 
-            await _auditRepository.LogAsync(new AuditEntry { Action = "DOCX_DOWNLOAD", StudentID = record.StudentID });
+            await _auditRepository.LogAsync(new AuditEntry 
+            { 
+                Action = "DOCX_DOWNLOAD", 
+                StudentID = record.StudentID,
+                IPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown",
+                UserAgent = Request.Headers["User-Agent"].ToString() ?? "Unknown"
+            });
             
             var viewModel = new CertificateViewModel(record);
             var bytes = await _service.GenerateDocxAsync(viewModel, Request.Host.Value);
@@ -98,7 +104,13 @@ namespace CertificatePortal.Controllers
             var record = await _repository.GetByStudentIdAsync(studentId);
             if (record == null) return NotFound();
 
-            await _auditRepository.LogAsync(new AuditEntry { Action = "PDF_DOWNLOAD", StudentID = record.StudentID });
+            await _auditRepository.LogAsync(new AuditEntry 
+            { 
+                Action = "PDF_DOWNLOAD", 
+                StudentID = record.StudentID,
+                IPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown",
+                UserAgent = Request.Headers["User-Agent"].ToString() ?? "Unknown"
+            });
             
             var viewModel = new CertificateViewModel(record);
             var bytes = await _service.GeneratePdfAsync(viewModel, Request.Host.Value);
