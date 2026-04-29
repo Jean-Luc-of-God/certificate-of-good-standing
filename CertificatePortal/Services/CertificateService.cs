@@ -94,19 +94,19 @@ namespace CertificatePortal.Services
                     .logo-cell {{ width: 95px; vertical-align: middle; text-align: left; }}
                     .logo-img {{ width: 90px; height: auto; }}
                     .header-text-cell {{ vertical-align: middle; text-align: left; padding-left: 15px; }}
-                    .uni-title {{ margin: 0; font-size: 1.55rem; font-weight: 500; color: #003399; font-family: 'Times New Roman', serif; }}
-                    .header-p {{ margin: 1px 0; font-size: 0.88rem; color: black; }}
-                    .cursive-line {{ font-family: 'Edwardian Script ITC', 'Brush Script MT', cursive; font-size: 2.7rem !important; margin: 2px 0 !important; font-weight: bold; color: black; line-height: 0.8; }}
+                    .uni-title {{ margin: 0; font-size: 16pt; font-weight: 500; color: #003399; font-family: 'Times New Roman', serif; }}
+                    .header-p {{ margin: 1px 0; font-size: 9pt; color: black; }}
+                    .cursive-line {{ font-family: 'Edwardian Script ITC', 'Brush Script MT', cursive; font-size: 22pt !important; margin: 2px 0 !important; font-weight: bold; color: black; line-height: 0.8; }}
                     .email-link {{ color: #0000FF; text-decoration: underline; font-weight: normal; }}
                     .black-text {{ color: black !important; text-decoration: none !important; font-weight: normal; }}
                     
-                    .date {{ text-align: left; margin-bottom: 20px; font-size: 1.2rem; font-weight: normal; }}
-                    .title {{ text-align: center; margin: 25px 0; font-size: 1.8rem; font-weight: bold; text-decoration: none; text-transform: uppercase; }}
+                    .date {{ text-align: left; margin-bottom: 20px; font-size: 12pt; font-weight: normal; }}
+                    .title {{ text-align: center; margin: 25px 0; font-size: 13.5pt; font-weight: bold; text-decoration: none; text-transform: uppercase; }}
 
-                    .body-p {{ text-align: justify; font-size: 1.2rem; line-height: 1.5; margin: 8px 0; }}
-                    .student-name {{ font-size: 1.45rem; font-weight: bold; margin: 15px 0 5px 0; }}
+                    .body-p {{ text-align: justify; font-size: 12pt; line-height: 1.5; margin: 8px 0; }}
+                    .student-name {{ font-size: 14pt; font-weight: bold; margin: 15px 0 5px 0; }}
                     .no-wrap {{ white-space: nowrap; }}
-                    .field {{ margin: 3px 0; font-size: 1.2rem; }}
+                    .field {{ margin: 3px 0; font-size: 12pt; }}
                     .field-label {{ font-weight: normal; }}
                     .field-value {{ font-weight: bold; }}
                     
