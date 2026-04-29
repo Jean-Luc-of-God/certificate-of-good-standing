@@ -49,18 +49,30 @@ namespace CertificatePortal.Services
 
         public async Task<byte[]> GeneratePdfAsync(CertificateViewModel model, string host)
         {
-            // Download browser engine ONLY when requested
-            await new PuppeteerSharp.BrowserFetcher().DownloadAsync();
+            // Use the pre-installed Chromium in the Docker container
+            var executablePath = Environment.GetEnvironmentVariable("PUPPETEER_EXECUTABLE_PATH") ?? "";
 
-            using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { 
+            var launchOptions = new LaunchOptions
+            {
                 Headless = true,
-                Args = new[] { "--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage" } 
-            });
+                Args = new[] { "--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage" }
+            };
+
+            if (!string.IsNullOrEmpty(executablePath) && File.Exists(executablePath))
+            {
+                launchOptions.ExecutablePath = executablePath;
+            }
+            else
+            {
+                // Fallback for local development
+                await new PuppeteerSharp.BrowserFetcher().DownloadAsync();
+            }
+
+            using var browser = await Puppeteer.LaunchAsync(launchOptions);
             using var page = await browser.NewPageAsync();
             
             await page.SetViewportAsync(new ViewPortOptions { Width = 794, Height = 1123 });
 
-            // In production, we try to use the public host name provided by the request
             string targetUrl = $"https://{host}/Certificate/Preview/{model.Record.StudentID}";
             
             await page.GoToAsync(targetUrl, WaitUntilNavigation.Networkidle0);

@@ -7,8 +7,9 @@ RUN dotnet publish "CertificatePortal/CertificatePortal.csproj" -c Release -o /a
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 
-# Install modern dependencies for Puppeteer (Chromium) on Debian 12
+# Install Chromium and dependencies
 RUN apt-get update && apt-get install -y \
+    chromium \
     libnss3 \
     libnspr4 \
     libatk1.0-0 \
@@ -25,11 +26,12 @@ RUN apt-get update && apt-get install -y \
     libasound2 \
     fonts-liberation \
     xdg-utils \
-    wget \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /app/publish .
-ENV ASPNETCORE_ENVIRONMENT=Development
+ENV ASPNETCORE_ENVIRONMENT=Production
 ENV UseMockData=true
+# Tell Puppeteer where Chromium is
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 ENTRYPOINT ["dotnet", "CertificatePortal.dll"]
