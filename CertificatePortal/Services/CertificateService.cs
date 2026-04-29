@@ -70,11 +70,16 @@ namespace CertificatePortal.Services
 
             using var browser = await Puppeteer.LaunchAsync(launchOptions);
             using var page = await browser.NewPageAsync();
+            
+            // Set timeout to 0 (disabled) to prevent the error you saw
+            page.DefaultNavigationTimeout = 0;
+            
             await page.SetViewportAsync(new ViewPortOptions { Width = 794, Height = 1123 });
 
-            // Generate HTML directly to avoid networking/port issues
             string html = GenerateHtmlContent(model);
-            await page.SetContentAsync(html, new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Networkidle0 } });
+            
+            // Wait ONLY for the content to be loaded, not for external network resources
+            await page.SetContentAsync(html, new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Load } });
 
             return await page.PdfDataAsync(new PdfOptions
             {
@@ -86,6 +91,17 @@ namespace CertificatePortal.Services
 
         private string GenerateHtmlContent(CertificateViewModel model)
         {
+            // Prepare Logo Base64
+            string logoBase64 = "";
+            var logoPath = Path.Combine(_env.WebRootPath, "images", "auca-logo.png");
+            if (File.Exists(logoPath)) logoBase64 = Convert.ToBase64String(File.ReadAllBytes(logoPath));
+
+            // Prepare Signature Base64
+            string sigBase64 = "";
+            var sigPath = Path.Combine(_env.WebRootPath, "images", "signature.png");
+            if (File.Exists(sigPath)) sigBase64 = Convert.ToBase64String(File.ReadAllBytes(sigPath));
+
+            // Prepare QR Code Base64
             var qrUrl = $"https://auca.ac.rw/verify/{model.Record.StudentID}";
             using var qrGenerator = new QRCodeGenerator();
             using var qrData = qrGenerator.CreateQrCode(qrUrl, QRCodeGenerator.ECCLevel.Q);
@@ -95,55 +111,61 @@ namespace CertificatePortal.Services
             return $@"
             <html>
             <head>
-                <link href='https://fonts.googleapis.com/css2?family=Merriweather&display=swap' rel='stylesheet'>
                 <style>
-                    body {{ font-family: 'Times New Roman', serif; padding: 0; margin: 0; background: white; }}
+                    body {{ font-family: 'Times New Roman', serif; padding: 0; margin: 0; background: white; color: black; }}
                     .cert-card {{ width: 210mm; height: 297mm; padding: 2.5cm; box-sizing: border-box; position: relative; }}
                     .header {{ display: flex; align-items: center; border-bottom: 2px solid black; padding-bottom: 10px; margin-bottom: 20px; }}
-                    .logo {{ width: 80px; height: 80px; margin-right: 20px; }}
+                    .logo-img {{ width: 80px; height: 80px; margin-right: 20px; }}
                     .header-text {{ flex: 1; text-align: center; }}
-                    .header-text h2 {{ margin: 0; font-size: 1.4rem; }}
-                    .header-text p {{ margin: 2px 0; font-size: 0.8rem; }}
+                    .header-text h2 {{ margin: 0; font-size: 1.4rem; font-weight: bold; }}
+                    .header-text p {{ margin: 2px 0; font-size: 0.85rem; }}
                     .date {{ text-align: right; margin-bottom: 30px; font-size: 1.1rem; }}
                     .title {{ text-align: center; margin: 40px 0; font-size: 1.6rem; text-decoration: underline; font-weight: bold; }}
-                    .body {{ text-align: justify; font-size: 1.15rem; line-height: 1.6; }}
-                    .details {{ margin: 20px 0; font-weight: bold; }}
-                    .field {{ margin: 5px 0; }}
+                    .body-p {{ text-align: justify; font-size: 1.15rem; line-height: 1.6; margin: 15px 0; }}
+                    .student-name {{ font-size: 1.3rem; font-weight: bold; margin: 20px 0 10px 0; }}
+                    .field {{ margin: 5px 0; font-size: 1.1rem; }}
                     .footer {{ position: absolute; bottom: 2.5cm; left: 2.5cm; right: 2.5cm; display: flex; justify-content: space-between; align-items: flex-end; }}
                     .sig-block {{ text-align: left; }}
                     .qr-block {{ text-align: right; font-size: 0.8rem; }}
-                    .qr-img {{ width: 80px; height: 80px; }}
+                    .qr-img {{ width: 85px; height: 85px; }}
+                    .sig-img {{ width: 140px; height: auto; margin-bottom: -15px; }}
                 </style>
             </head>
             <body>
                 <div class='cert-card'>
                     <div class='header'>
+                        <img src='data:image/png;base64,{logoBase64}' class='logo-img'>
                         <div class='header-text'>
                             <h2>Adventist University of Central Africa</h2>
                             <p>P.O. Box 2461 Kigali, Rwanda | www.auca.ac.rw | info@auca.ac.rw</p>
                             <p style='font-style:italic; font-size:1.1rem;'>Directorate for Admissions and Academic Records</p>
-                            <p>Mobile: (+250)724 796 996 / 724 474 805</p>
+                            <p>Mobile: (+250)724 796 996 / 724 474 805 / 788 473 035</p>
                             <p>Email: registrar@auca.ac.rw</p>
                         </div>
                     </div>
                     <div class='date'>{model.CityAndDate}</div>
                     <div class='title'>CERTIFICATE OF GOOD STANDING</div>
-                    <div class='body'>
-                        <p>I, the undersigned, Eng. Nsengiyumva Juvenal, Director for Admissions and Academic Records of Adventist University of Central Africa, hereby certify that:</p>
-                        <div class='details' style='font-size: 1.3rem;'>{model.Record.StudentName}</div>
-                        <p>Born on {model.FormattedBirthDate}</p>
-                        <p>has been a regular student of this University, registered under ID No. {model.Record.StudentID},</p>
-                        <p>From {model.Record.StudiedFrom} to {model.Record.StudiedTo}.</p>
-                        <div class='field'><b>Year:</b> {model.Record.Year}</div>
-                        <div class='field'><b>Faculty:</b> {model.Record.Faculty}</div>
-                        <div class='field'><b>Major:</b> {model.Record.Major}</div>
-                        <div class='field'><b>Academic year:</b> {model.Record.AcademicYear}</div>
-                        <div class='field'><b>Validity:</b> {model.Record.AcademicYear}</div>
-                        <p style='margin-top: 30px; font-style: italic;'>This certificate is issued for any legal or administrative purpose it may serve</p>
+                    <div class='body-p'>
+                        I, the undersigned, Eng. Nsengiyumva Juvenal, Director for Admissions and Academic Records of Adventist University of Central Africa, hereby certify that:
+                    </div>
+                    <div class='student-name'>{model.Record.StudentName}</div>
+                    <div class='body-p'>
+                        Born on {model.FormattedBirthDate}<br>
+                        has been a regular student of this University, registered under ID No. {model.Record.StudentID},<br>
+                        From {model.Record.StudiedFrom} to {model.Record.StudiedTo}.
+                    </div>
+                    <div class='field'><b>Year:</b> {model.Record.Year}</div>
+                    <div class='field'><b>Faculty:</b> {model.Record.Faculty}</div>
+                    <div class='field'><b>Major:</b> {model.Record.Major}</div>
+                    <div class='field'><b>Academic year:</b> {model.Record.AcademicYear}</div>
+                    <div class='field'><b>Validity:</b> {model.Record.AcademicYear}</div>
+                    <div class='body-p' style='margin-top: 30px; font-style: italic;'>
+                        This certificate is issued for any legal or administrative purpose it may serve
                     </div>
                     <div class='footer'>
                         <div class='sig-block'>
-                            <p style='margin-bottom: 50px;'>______________________________</p>
+                            <img src='data:image/png;base64,{sigBase64}' class='sig-img'><br>
+                            <p style='margin: 0;'>______________________________</p>
                             <b>Eng. Nsengiyumva Juvenal</b><br>
                             Director for Admissions and Academic Records<br>
                             Adventist University of Central Africa
@@ -176,7 +198,7 @@ namespace CertificatePortal.Services
             table.AppendChild(tableProps);
             var row = new TableRow();
             var leftCell = new TableCell();
-            leftCell.AppendChild(new TableCellProperties(new TableCellWidth { Type = TableWidthUnitValues.Pct, Width = "1000" }, new TableCellVerticalAlignment { Val = TableVerticalAlignmentValues.Center }));
+            leftCell.AppendChild(new TableCellProperties(new TableWidth { Type = TableWidthUnitValues.Pct, Width = "1000" }, new TableCellVerticalAlignment { Val = TableVerticalAlignmentValues.Center }));
             var logoPath = Path.Combine(_env.WebRootPath, "images", "auca-logo.png");
             if (File.Exists(logoPath))
             {
