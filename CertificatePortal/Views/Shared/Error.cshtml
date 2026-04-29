@@ -1,5 +1,7 @@
+@using Microsoft.AspNetCore.Diagnostics
 @{
     ViewData["Title"] = "Error";
+    var exceptionHandlerPathFeature = Context.Features.Get<IExceptionHandlerPathFeature>();
 }
 
 <div class="hero">
@@ -8,9 +10,15 @@
 </div>
 
 <div class="search-card" style="text-align: center;">
-    <div class="error-card" style="justify-content: center; border-left: none; border-top: 5px solid var(--error-color);">
+    <div class="error-card" style="flex-direction: column; align-items: center; border-left: none; border-top: 5px solid var(--error-color);">
         <span>⚠️</span>
-        <p>Our technical team has been notified. Please try again later or contact the IT department if the issue persists.</p>
+        <p><strong>Technical Detail:</strong></p>
+        <code style="background: #eee; padding: 10px; display: block; width: 100%; text-align: left; overflow-x: auto;">
+            @(exceptionHandlerPathFeature?.Error.Message ?? "No error details available.")
+            <br />
+            <br />
+            @(exceptionHandlerPathFeature?.Error.StackTrace?.Take(300) ?? "")
+        </code>
     </div>
     <a href="/" class="btn btn-primary" style="margin-top: 2rem;">Return to Home</a>
 </div>
