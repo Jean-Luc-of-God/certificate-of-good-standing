@@ -133,28 +133,42 @@ namespace CertificatePortal.Services
             <head>
                 <style>
                     body {{ font-family: 'Times New Roman', serif; padding: 0; margin: 0; background: white; color: black; }}
-                    .cert-card {{ width: 210mm; height: 297mm; padding: 2.5cm; box-sizing: border-box; position: relative; }}
+                    .cert-card {{ width: 210mm; height: 297mm; padding: 2.5cm; box-sizing: border-box; position: relative; display: flex; flex-direction: column; }}
+                    
+                    /* Header Styling */
                     .header {{ display: flex; align-items: center; border-bottom: 2px solid black; padding-bottom: 10px; margin-bottom: 20px; }}
-                    .logo-img {{ width: 80px; height: 80px; margin-right: 20px; }}
-                    .header-text {{ flex: 1; text-align: center; }}
-                    .header-text h2 {{ margin: 0; font-size: 1.4rem; font-weight: bold; color: #003399; }}
-                    .header-text p {{ margin: 2px 0; font-size: 0.85rem; }}
-                    .cursive-line {{ font-family: 'Edwardian Script ITC', cursive; font-size: 2.5rem !important; margin: 5px 0 !important; font-weight: normal; }}
+                    .logo-img {{ width: 85px; height: 85px; }}
+                    .header-text {{ flex: 1; text-align: left; margin-left: 20px; }}
+                    .header-text h2 {{ margin: 0; font-size: 1.5rem; font-weight: 500; color: #003399; }}
+                    .header-text p {{ margin: 1px 0; font-size: 0.85rem; }}
+                    .cursive-line {{ font-family: 'Edwardian Script ITC', cursive; font-size: 2.4rem !important; margin: 2px 0 !important; font-weight: bold; color: black; }}
+                    .contact-line {{ margin-top: 8px !important; }}
+                    .label-black {{ color: black; font-weight: normal; }}
                     .email-link {{ color: blue; text-decoration: underline; }}
-                    .date {{ text-align: left; margin-bottom: 30px; font-size: 1.1rem; }}
-                    .title {{ text-align: center; margin: 40px 0; font-size: 1.6rem; font-weight: bold; }}
-                    .body-p {{ text-align: justify; font-size: 1.15rem; line-height: 1.6; margin: 15px 0; }}
-                    .student-name {{ font-size: 1.3rem; font-weight: bold; margin: 20px 0 10px 0; }}
-                    .field {{ margin: 2px 0; font-size: 1.1rem; }}
+                    
+                    /* Body Styling */
+                    .date {{ text-align: left; margin-bottom: 30px; font-size: 1.15rem; font-weight: bold; }}
+                    .title {{ text-align: center; margin: 35px 0; font-size: 1.7rem; font-weight: bold; text-decoration: none; }}
+                    .body-p {{ text-align: justify; font-size: 1.15rem; line-height: 1.6; margin: 12px 0; }}
+                    .student-name {{ font-size: 1.35rem; font-weight: bold; margin: 15px 0 10px 0; }}
+                    .no-wrap {{ white-space: nowrap; }}
+                    
+                    /* Data Fields */
+                    .field {{ margin: 1px 0; font-size: 1.15rem; }}
                     .field-label {{ font-weight: normal; }}
                     .field-value {{ font-weight: bold; }}
-                    .footer-hr {{ border: none; border-top: 2px solid black; margin-bottom: 10px; }}
-                    .footer {{ position: absolute; bottom: 2.5cm; left: 2.5cm; right: 2.5cm; display: flex; justify-content: space-between; align-items: flex-end; }}
-                    .sig-block {{ text-align: left; flex: 1; }}
-                    .qr-block {{ text-align: left; width: 150px; }}
-                    .qr-img {{ width: 85px; height: 85px; }}
-                    .sig-img {{ width: 140px; height: auto; margin-bottom: -15px; float: right; }}
-                    .no-wrap {{ white-space: nowrap; }}
+                    
+                    /* Footer Styling */
+                    .footer-container {{ margin-top: auto; padding-bottom: 0.5cm; }}
+                    .sig-row {{ display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5px; }}
+                    .qr-block {{ text-align: left; }}
+                    .qr-img {{ width: 90px; height: 90px; }}
+                    .verify-text {{ font-size: 0.85rem; margin-top: 5px; }}
+                    .sig-block {{ text-align: right; }}
+                    .sig-img {{ width: 150px; height: auto; }}
+                    .footer-hr {{ border: none; border-top: 2px solid black; margin: 0 0 10px 0; width: 100%; }}
+                    .director-info {{ text-align: left; line-height: 1.4; font-size: 1.1rem; }}
+                    .dir-name {{ font-weight: bold; }}
                 </style>
             </head>
             <body>
@@ -165,42 +179,52 @@ namespace CertificatePortal.Services
                             <h2>Adventist University of Central Africa</h2>
                             <p>P.O. Box 2461 Kigali, Rwanda | www.auca.ac.rw | info@auca.ac.rw</p>
                             <p class='cursive-line'>Directorate for Admissions and Academic Records</p>
-                            <p>{model.MobilePhoneLabel}(+250)724 796 996 / 724 474 805 / 788 473 035</p>
-                            <p><a class='email-link'>registrar@auca.ac.rw</a> || <a class='email-link'>juvenal.nsengiyumva@auca.ac.rw</a></p>
+                            <p class='contact-line'>Mobile Phone : (+250) 724 796 996 / 724 474 805 / 788 473 035</p>
+                            <p><span class='label-black'>Email: </span><a class='email-link'>registrar@auca.ac.rw</a> <span class='label-black'>||</span> <a class='email-link'>juvenal.nsengiyumva@auca.ac.rw</a></p>
                         </div>
                     </div>
+
                     <div class='date'>{model.CityAndDate}</div>
+                    
                     <div class='title'>CERTIFICATE OF GOOD STANDING</div>
+                    
                     <div class='body-p'>
                         I, the undersigned, <b>Eng. Nsengiyumva Juvenal</b>, <b>Director for Admissions and Academic Records</b> of the Adventist University of Central Africa, hereby certify that:
                     </div>
+                    
                     <div class='student-name'>{model.FormattedStudentName}</div>
+                    
                     <div class='body-p'>
                         Born on <b>{model.FormattedBirthDate}</b>,<br>
                         <span class='no-wrap'>has been a regular student of this University, registered under <b>ID No. {model.Record.StudentID}</b>,</span><br>
                         From <b>{model.Record.StudiedFrom}</b> to <b>{model.Record.StudiedTo}</b>.
                     </div>
+
                     <div class='field'><span class='field-label'>Year:</span> <span class='field-value'>{model.Record.Year}</span></div>
                     <div class='field'><span class='field-label'>Faculty:</span> <span class='field-value'>{model.Record.Faculty}</span></div>
                     <div class='field'><span class='field-label'>Major:</span> <span class='field-value'>{model.Record.Major}</span></div>
                     <div class='field'><span class='field-label'>Academic year:</span> <span class='field-value'>{model.Record.AcademicYear}</span></div>
                     <div class='field'><span class='field-label'>Validity:</span> <span class='field-value'>{model.Record.AcademicYear}</span></div>
+
                     <div class='body-p' style='margin-top: 30px; font-style: italic;'>
                         This certificate is issued for any legal or administrative purpose it may serve
                     </div>
                     
-                    <div class='footer'>
-                        <div class='qr-block'>
-                            <img src='data:image/png;base64,{qrBase64}' class='qr-img'><br>
-                            Scan to verify my Validity
+                    <div class='footer-container'>
+                        <div class='sig-row'>
+                            <div class='qr-block'>
+                                <img src='data:image/png;base64,{qrBase64}' class='qr-img'><br>
+                                <div class='verify-text'>Scan to verify my Validity</div>
+                            </div>
+                            <div class='sig-block'>
+                                <img src='data:image/png;base64,{sigBase64}' class='sig-img'>
+                            </div>
                         </div>
-                        <div class='sig-block'>
-                            <img src='data:image/png;base64,{sigBase64}' class='sig-img'>
-                            <div style='clear:both;'></div>
-                            <hr class='footer-hr'>
-                            <b>Eng. Nsengiyumva Juvenal</b><br>
-                            Director for Admissions and Academic Records<br>
-                            Adventist University of Central Africa
+                        <hr class='footer-hr'>
+                        <div class='director-info'>
+                            <div class='dir-name'>Eng. Nsengiyumva Juvenal</div>
+                            <div>Director for Admissions and Academic Records</div>
+                            <div>Adventist University of Central Africa</div>
                         </div>
                     </div>
                 </div>
