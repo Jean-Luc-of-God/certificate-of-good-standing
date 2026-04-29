@@ -12,8 +12,6 @@ using CertificatePortal.Helpers;
 
 namespace CertificatePortal.Controllers
 {
-    [Route("Certificate/[action]")]
-    [Route("")]
     public class CertificateController : Controller
     {
         private readonly ICertificateRepository _repository;
