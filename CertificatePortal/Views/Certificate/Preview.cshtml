@@ -4,7 +4,6 @@
 @{
     ViewData["Title"] = "Preview Certificate";
     var s = Settings.Value;
-    // Generate QR Code for Web Preview
     var qrUrl = $"https://auca.ac.rw/verify/{Model.Record.StudentID}";
     var qrGenerator = new QRCoder.QRCodeGenerator();
     var qrData = qrGenerator.CreateQrCode(qrUrl, QRCoder.QRCodeGenerator.ECCLevel.Q);
@@ -13,250 +12,48 @@
 }
 
 <style>
-    .preview-container {
-        max-width: 950px;
-        margin: 0 auto;
-    }
-
-    .preview-actions {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 2rem;
-    }
-
+    .preview-container { max-width: 950px; margin: 0 auto; }
+    .preview-actions { display: flex; justify-content: space-between; margin-bottom: 1.5rem; }
     .certificate-card {
-        background: white;
-        padding: 4rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        border: 1px solid #ddd;
-        font-family: 'Times New Roman', Times, serif;
-        color: black;
-        position: relative;
-        min-height: 1050px;
-        display: flex;
-        flex-direction: column;
+        background: white; padding: 1.5cm 2.2cm; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid #ddd;
+        font-family: 'Times New Roman', Times, serif; color: black; position: relative; min-height: 297mm;
+        display: flex; flex-direction: column; box-sizing: border-box; line-height: 1.2;
     }
-
-    /* Header Table Layout */
-    .header-table {
-        width: 100%;
-        border-bottom: 2.5px solid #000;
-        padding-bottom: 10px;
-        margin-bottom: 25px;
-        border-collapse: collapse;
-    }
-
-    .logo-cell {
-        width: 100px;
-        vertical-align: middle;
-        text-align: left;
-    }
-
-    .cert-logo {
-        width: 90px;
-        height: auto;
-    }
-
-    .header-text-cell {
-        vertical-align: middle;
-        text-align: left;
-        padding-left: 15px;
-    }
-
-    .uni-title {
-        font-family: 'Times New Roman', serif;
-        font-size: 1.6rem;
-        margin: 0;
-        font-weight: 500;
-        color: #003399;
-    }
-
-    .header-p {
-        margin: 1px 0;
-        font-size: 0.9rem;
-    }
-
-    .dept-line {
-        font-family: 'Edwardian Script ITC', cursive;
-        font-size: 2.6rem !important;
-        margin: 4px 0 !important;
-        font-style: normal !important;
-        font-weight: bold;
-        color: black;
-        line-height: 0.9;
-    }
-
-    .black-text {
-        color: black;
-        font-weight: normal;
-    }
-
-    .email-link {
-        color: blue;
-        text-decoration: underline;
-    }
-
-    /* Body Styling */
-    .cert-date {
-        text-align: left;
-        margin-bottom: 2.5rem;
-        font-size: 1.2rem;
-        font-weight: bold;
-    }
-
-    .cert-title {
-        text-align: center;
-        margin: 2.5rem 0;
-    }
-
-    .cert-title h1 {
-        font-family: 'Times New Roman', serif;
-        font-size: 1.9rem;
-        text-decoration: none;
-        font-weight: bold;
-        color: black;
-        text-transform: uppercase;
-    }
-
-    .cert-body {
-        font-size: 1.2rem;
-        line-height: 1.7;
-        text-align: justify;
-    }
-
-    .student-details {
-        margin: 1.5rem 0;
-    }
-
-    .student-name {
-        font-size: 1.45rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-    }
-
-    .field-label {
-        font-weight: normal;
-    }
-
-    .field-value {
-        font-weight: bold;
-    }
-
-    .no-wrap {
-        white-space: nowrap;
-    }
-
-    /* Footer Styling */
-    .cert-footer {
-        margin-top: auto;
-        display: flex;
-        flex-direction: column;
-        padding-bottom: 1rem;
-    }
-
-    .footer-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .footer-cell-left {
-        width: 50%;
-        vertical-align: bottom;
-        text-align: left;
-    }
-
-    .footer-cell-right {
-        width: 50%;
-        vertical-align: bottom;
-        text-align: right;
-    }
-
-    .sig-image {
-        width: 165px;
-        height: auto;
-        margin-bottom: 2px;
-        display: block;
-    }
-
-    .qr-image {
-        width: 105px;
-        height: 105px;
-        display: block;
-        margin-left: auto;
-    }
-
-    .verify-text {
-        font-size: 0.9rem;
-        margin-top: 5px;
-        text-align: center;
-        width: 105px;
-        float: right;
-    }
-
-    .footer-hr {
-        border: none;
-        border-top: 1.5px solid black;
-        margin: 5px 0 10px 0;
-        width: 100%;
-    }
-
-    .director-info {
-        text-align: left;
-        line-height: 1.5;
-        font-size: 1.15rem;
-    }
-
-    .dir-name {
-        font-weight: bold;
-    }
-
-    .btn {
-        padding: 0.8rem 1.5rem;
-        border-radius: 4px;
-        font-weight: 600;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .btn-outline {
-        border: 2px solid var(--primary-color);
-        color: var(--primary-color);
-        background: white;
-    }
-
-    .btn-gold {
-        background-color: var(--accent-color);
-        color: var(--primary-color);
-    }
-
+    .header-table { width: 100%; border-bottom: 2.5px solid #000; padding-bottom: 8px; margin-bottom: 20px; border-collapse: collapse; }
+    .logo-cell { width: 95px; vertical-align: middle; text-align: left; }
+    .cert-logo { width: 90px; height: auto; }
+    .header-text-cell { vertical-align: middle; text-align: left; padding-left: 15px; }
+    .uni-title { font-size: 1.55rem; margin: 0; font-weight: 500; color: #003399; }
+    .header-p { margin: 1px 0; font-size: 0.88rem; }
+    .dept-line { font-family: 'Edwardian Script ITC', cursive; font-size: 2.7rem !important; margin: 2px 0 !important; font-weight: bold; color: black; line-height: 0.8; }
+    .email-link { color: blue; text-decoration: underline; }
+    .black-text { color: black; font-weight: normal; }
+    .cert-date { text-align: left; margin-bottom: 20px; font-size: 1.2rem; font-weight: bold; }
+    .cert-title { text-align: center; margin: 25px 0; font-size: 1.8rem; font-weight: bold; text-transform: uppercase; }
+    .cert-body { font-size: 1.2rem; line-height: 1.5; text-align: justify; }
+    .student-details { margin: 10px 0; }
+    .student-name { font-size: 1.45rem; font-weight: bold; margin-bottom: 5px; }
+    .field-label { font-weight: normal; }
+    .field-value { font-weight: bold; }
+    .no-wrap { white-space: nowrap; }
+    .cert-footer { margin-top: auto; display: flex; flex-direction: column; padding-bottom: 0.5cm; }
+    .footer-table { width: 100%; border-collapse: collapse; }
+    .footer-cell-left { width: 60%; vertical-align: bottom; text-align: left; }
+    .footer-cell-right { width: 40%; vertical-align: bottom; text-align: right; }
+    .sig-image { width: 165px; height: auto; margin-bottom: -5px; display: block; }
+    .sig-line { border-top: 1.5px solid black; width: 330px; margin: 5px 0; }
+    .director-info { text-align: left; line-height: 1.4; font-size: 1.15rem; }
+    .sig-name { font-weight: bold; }
+    .qr-image { width: 105px; height: 105px; display: block; margin-left: auto; }
+    .verify-text { font-size: 0.9rem; margin-top: 5px; text-align: center; width: 105px; float: right; }
+    .btn { padding: 0.8rem 1.5rem; border-radius: 4px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; }
+    .btn-outline { border: 2px solid var(--primary-color); color: var(--primary-color); background: white; }
+    .btn-gold { background-color: var(--accent-color); color: var(--primary-color); }
     @@media print {
-        header, footer, .preview-actions, .no-print {
-            display: none !important;
-        }
-        body {
-            background: white !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-        main {
-            margin: 0 !important;
-            padding: 0 !important;
-            max-width: 100% !important;
-        }
-        .certificate-card {
-            box-shadow: none !important;
-            border: none !important;
-            padding: 2.5cm !important;
-            width: 210mm !important;
-            height: 297mm !important;
-            min-height: 297mm !important;
-            margin: 0 auto !important;
-            page-break-after: always;
-            box-sizing: border-box;
-        }
+        header, footer, .preview-actions, .no-print { display: none !important; }
+        body { background: white !important; margin: 0 !important; padding: 0 !important; }
+        main { margin: 0 !important; padding: 0 !important; max-width: 100% !important; }
+        .certificate-card { box-shadow: none !important; border: none !important; padding: 1.5cm 2.2cm !important; width: 210mm !important; height: 297mm !important; margin: 0 auto !important; page-break-after: always; overflow: hidden; }
     }
 </style>
 
@@ -272,58 +69,44 @@
     <div class="certificate-card">
         <table class="header-table">
             <tr>
-                <td class="logo-cell">
-                    <img src="~/images/auca-logo.png" class="cert-logo" alt="AUCA Logo" />
-                </td>
+                <td class="logo-cell"><img src="~/images/auca-logo.png" class="cert-logo" alt="AUCA Logo" /></td>
                 <td class="header-text-cell">
                     <h2 class="uni-title">Adventist University of Central Africa</h2>
                     <p class="header-p">P.O. Box 2461 Kigali, Rwanda | www.auca.ac.rw | info@auca.ac.rw</p>
                     <p class="dept-line">Directorate for Admissions and Academic Records</p>
                     <p class="header-p" style="margin-top: 10px;">Mobile Phone : (+250) 724 796 996 / 724 474 805 / 788 473 035</p>
-                    <p class="header-p">
-                        <span class="black-text">Email: </span>
-                        <a class="email-link">registrar@auca.ac.rw</a> 
-                        <span class="black-text"> || </span> 
-                        <a class="email-link">juvenal.nsengiyumva@auca.ac.rw</a>
-                    </p>
+                    <p class="header-p"><span class="black-text">Email: </span><a class="email-link">registrar@auca.ac.rw</a> <span class="black-text"> || </span> <a class="email-link">juvenal.nsengiyumva@auca.ac.rw</a></p>
                 </td>
             </tr>
         </table>
-
-        <div class="cert-date">
-            @Model.CityAndDate
-        </div>
-
-        <div class="cert-title">
-            <h1>CERTIFICATE OF GOOD STANDING</h1>
-        </div>
-
+        <div class="cert-date">@Model.CityAndDate</div>
+        <div class="cert-title">CERTIFICATE OF GOOD STANDING</div>
         <div class="cert-body">
             <p>I, the undersigned, <strong>Eng. Nsengiyumva Juvenal</strong>, <strong>Director for Admissions and Academic Records</strong> of the Adventist University of Central Africa, hereby certify that:</p>
-
             <div class="student-details">
                 <div class="student-name">@Model.FormattedStudentName</div>
                 <div>Born on <strong>@Model.FormattedBirthDate</strong>,</div>
                 <div class="no-wrap">has been a regular student of this University, registered under <strong>ID No. @Model.Record.StudentID</strong>,</div>
                 <div>From <strong>@Model.Record.StudiedFrom</strong> to <strong>@Model.Record.StudiedTo</strong>.</div>
             </div>
-
             <p style="margin: 4px 0;"><span class="field-label">Year:</span> <span class="field-value">@Model.Record.Year</span></p>
             <p style="margin: 4px 0;"><span class="field-label">Faculty:</span> <span class="field-value">@Model.Record.Faculty</span></p>
             <p style="margin: 4px 0;"><span class="field-label">Major:</span> <span class="field-value">@Model.Record.Major</span></p>
             <p style="margin: 4px 0;"><span class="field-label">Academic year:</span> <span class="field-value">@Model.Record.AcademicYear</span></p>
             <p style="margin: 4px 0;"><span class="field-label">Validity:</span> <span class="field-value">@Model.Record.AcademicYear</span></p>
-
-            <p style="margin-top: 35px;">
-                This certificate is issued for any legal or administrative purpose it may serve
-            </p>
+            <p style="margin-top: 25px;">This certificate is issued for any legal or administrative purpose it may serve</p>
         </div>
-
         <div class="cert-footer">
             <table class="footer-table">
                 <tr>
                     <td class="footer-cell-left">
                         <img src="~/images/signature.png" class="sig-image" alt="Signature" />
+                        <div class="sig-line"></div>
+                        <div class="director-info">
+                            <div class="sig-name">Eng. Nsengiyumva Juvenal</div>
+                            <div>Director for Admissions and Academic Records</div>
+                            <div>Adventist University of Central Africa</div>
+                        </div>
                     </td>
                     <td class="footer-cell-right">
                         <img src="data:image/png;base64,@qrBase64" class="qr-image" alt="QR Code" />
@@ -331,14 +114,6 @@
                     </td>
                 </tr>
             </table>
-            
-            <hr class="footer-hr" />
-            
-            <div class="director-info">
-                <div class="dir-name">Eng. Nsengiyumva Juvenal</div>
-                <div>Director for Admissions and Academic Records</div>
-                <div>Adventist University of Central Africa</div>
-            </div>
         </div>
     </div>
 </div>
