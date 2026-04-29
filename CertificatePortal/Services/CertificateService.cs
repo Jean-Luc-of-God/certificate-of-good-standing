@@ -27,7 +27,7 @@ namespace CertificatePortal.Services
             _env = env;
         }
 
-        public async Task<byte[]> GenerateDocxAsync(CertificateViewModel model, string host)
+        public Task<byte[]> GenerateDocxAsync(CertificateViewModel model, string host)
         {
             using (var mem = new MemoryStream())
             {
@@ -47,7 +47,7 @@ namespace CertificatePortal.Services
                     AddContent(body, model);
                     AddFooter(mainPart, body, model);
                 }
-                return mem.ToArray();
+                return Task.FromResult(mem.ToArray());
             }
         }
 
@@ -99,8 +99,8 @@ namespace CertificatePortal.Services
                     .email-link {{ color: #0000FF; text-decoration: underline; font-weight: normal; }}
                     .black-text {{ color: black !important; text-decoration: none !important; font-weight: normal; }}
                     
-                    .date { text-align: left; margin-bottom: 20px; font-size: 1.2rem; font-weight: normal; }
-                    .title { text-align: center; margin: 25px 0; font-size: 1.8rem; font-weight: bold; text-decoration: none; text-transform: uppercase; }
+                    .date {{ text-align: left; margin-bottom: 20px; font-size: 1.2rem; font-weight: normal; }}
+                    .title {{ text-align: center; margin: 25px 0; font-size: 1.8rem; font-weight: bold; text-decoration: none; text-transform: uppercase; }}
 
                     .body-p {{ text-align: justify; font-size: 1.2rem; line-height: 1.5; margin: 8px 0; }}
                     .student-name {{ font-size: 1.45rem; font-weight: bold; margin: 15px 0 5px 0; }}
