@@ -250,7 +250,8 @@ namespace CertificatePortal.Services
             // After header table
             body.Append(new Paragraph(new ParagraphProperties(new SpacingBetweenLines() { After = "200" })));
 
-            body.Append(CreateStyledParagraph(model.CityAndDate, JustificationValues.Left, false, 24, lineSpacing: "360"));
+            // Date: Moved to the right, Bold, 24pt
+            body.Append(CreateStyledParagraph(model.CityAndDate, JustificationValues.Right, true, 24, lineSpacing: "360"));
             
             var titleP = CreateStyledParagraph("CERTIFICATE OF GOOD STANDING", JustificationValues.Center, true, 27);
             titleP.GetFirstChild<Run>().RunProperties.Append(new Underline() { Val = UnderlineValues.Single });
@@ -258,29 +259,53 @@ namespace CertificatePortal.Services
             titleP.GetFirstChild<ParagraphProperties>().Append(new SpacingBetweenLines() { Before = "400", After = "400" });
             body.Append(titleP);
 
-            body.Append(CreateStyledParagraph($"I, the undersigned, Eng. Nsengiyumva Juvenal, Director for Admissions and Academic Records of Adventist University of Central Africa, hereby certify that:", JustificationValues.Both, false, 22, lineSpacing: "360"));
-            
-            // One empty paragraph after intro
-            body.Append(new Paragraph(new Run(new Text(""))));
+            // Intro: Helvetica 21pt, Color #443742
+            body.Append(CreateComplexParagraph(JustificationValues.Both, "360",
+                CreateRun("I, the undersigned, ", false, "Helvetica", 21, "443742"),
+                CreateRun("Eng. Nsengiyumva Juvenal", true, "Helvetica", 21, "443742"),
+                CreateRun(", ", false, "Helvetica", 21, "443742"),
+                CreateRun("Director for Admissions and Academic Records", true, "Helvetica", 21, "443742"),
+                CreateRun(" of the Adventist University of Central Africa, hereby certify that:", false, "Helvetica", 21, "443742")
+            ));
 
-            body.Append(CreateStyledParagraph(model.Record.StudentName, JustificationValues.Left, true, 24, lineSpacing: "360"));
-            body.Append(CreateStyledParagraph($"Born on {model.FormattedBirthDate}", JustificationValues.Left, false, 22, lineSpacing: "360"));
-            body.Append(CreateStyledParagraph($"has been a regular student of this University, registered under ID No. {model.Record.StudentID},", JustificationValues.Both, false, 22, lineSpacing: "360"));
-            body.Append(CreateStyledParagraph($"From {model.Record.StudiedFrom} to {model.Record.StudiedTo}.", JustificationValues.Left, false, 22, lineSpacing: "360"));
-            
-            // One empty paragraph before fields
-            body.Append(new Paragraph(new Run(new Text(""))));
+            // Student Name: Helvetica 21pt, Color #443742, Bold
+            body.Append(CreateComplexParagraph(JustificationValues.Left, "360",
+                CreateRun(model.Record.StudentName + ",", true, "Helvetica", 21, "443742")
+            ));
 
-            body.Append(CreateMixedParagraph("Year: ", model.Record.Year, lineSpacing: "360"));
-            body.Append(CreateMixedParagraph("Faculty: ", model.Record.Faculty, lineSpacing: "360"));
-            body.Append(CreateMixedParagraph("Major: ", model.Record.Major, lineSpacing: "360"));
-            body.Append(CreateMixedParagraph("Academic year: ", model.Record.AcademicYear, lineSpacing: "360"));
-            body.Append(CreateMixedParagraph("Validity: ", model.Record.AcademicYear, lineSpacing: "360"));
-            
-            // One empty paragraph after fields with After="200"
+            // Born on: Normal, Date is Bold
+            body.Append(CreateComplexParagraph(JustificationValues.Left, "360",
+                CreateRun("Born on ", false, "Times New Roman", 24, "000000"),
+                CreateRun(model.FormattedBirthDate + ",", true, "Times New Roman", 24, "000000")
+            ));
+
+            // Registered under: ID is Bold
+            body.Append(CreateComplexParagraph(JustificationValues.Left, "360",
+                CreateRun("has been a regular student of this University, registered under ", false, "Times New Roman", 24, "000000"),
+                CreateRun("ID No. ", true, "Times New Roman", 24, "000000"),
+                CreateRun(model.Record.StudentID + ",", true, "Times New Roman", 24, "000000")
+            ));
+
+            // From: Dates are Bold
+            body.Append(CreateComplexParagraph(JustificationValues.Left, "360",
+                CreateRun("From ", false, "Times New Roman", 24, "000000"),
+                CreateRun(model.Record.StudiedFrom, true, "Times New Roman", 24, "000000"),
+                CreateRun(" to ", true, "Times New Roman", 24, "000000"),
+                CreateRun(model.Record.StudiedTo + ".", true, "Times New Roman", 24, "000000")
+            ));
+
+            // Fields: All Bold
+            body.Append(CreateComplexParagraph(JustificationValues.Left, "360", CreateRun("Year: ", true, "Times New Roman", 24, "000000"), CreateRun(model.Record.Year, true, "Times New Roman", 24, "000000")));
+            body.Append(CreateComplexParagraph(JustificationValues.Left, "360", CreateRun("Faculty: ", true, "Times New Roman", 24, "000000"), CreateRun(model.Record.Faculty, true, "Times New Roman", 24, "000000")));
+            body.Append(CreateComplexParagraph(JustificationValues.Left, "360", CreateRun("Major: ", true, "Times New Roman", 24, "000000"), CreateRun(model.Record.Major, true, "Times New Roman", 24, "000000")));
+            body.Append(CreateComplexParagraph(JustificationValues.Left, "360", CreateRun("Academic year: ", true, "Times New Roman", 24, "000000"), CreateRun(model.Record.AcademicYear, true, "Times New Roman", 24, "000000")));
+            body.Append(CreateComplexParagraph(JustificationValues.Left, "360", CreateRun("Validity: ", true, "Times New Roman", 24, "000000"), CreateRun(model.Record.AcademicYear, true, "Times New Roman", 24, "000000")));
+
             body.Append(new Paragraph(new ParagraphProperties(new SpacingBetweenLines() { After = "200" })));
 
-            body.Append(CreateStyledParagraph("This certificate is issued for any legal or administrative purpose it may serve", JustificationValues.Left, false, 22, italic: true, lineSpacing: "360"));
+            var italicRun = CreateRun("This certificate is issued for any legal or administrative purpose it may serve", false, "Times New Roman", 24, "000000");
+            italicRun.RunProperties.Append(new Italic());
+            body.Append(CreateComplexParagraph(JustificationValues.Left, "360", italicRun));
         }
 
         private void AddFooter(MainDocumentPart mainPart, Body body, CertificateViewModel model)
@@ -325,73 +350,38 @@ namespace CertificatePortal.Services
             return qrCode.GetGraphic(5);
         }
 
-        private Paragraph CreateStyledParagraph(string text, JustificationValues justify, bool bold, int fontSize, string fontName = "Times New Roman", bool italic = false, string lineSpacing = null)
+        private Run CreateRun(string text, bool bold = false, string font = "Times New Roman", int size = 24, string color = "000000")
         {
             var run = new Run();
             var rp = new RunProperties();
-            rp.Append(new RunFonts() 
-            { 
-                Ascii = fontName, 
-                HighAnsi = fontName,
-                ComplexScript = fontName
-            });
-            rp.Append(new FontSize() { Val = fontSize.ToString() });
-            rp.Append(new FontSizeComplexScript() { Val = fontSize.ToString() });
-            rp.Append(new Color() { Val = "000000" });
+            rp.Append(new RunFonts() { Ascii = font, HighAnsi = font, ComplexScript = font });
+            rp.Append(new FontSize() { Val = size.ToString() });
+            rp.Append(new FontSizeComplexScript() { Val = size.ToString() });
+            rp.Append(new Color() { Val = color });
             if (bold) rp.Append(new Bold());
-            if (italic) rp.Append(new Italic());
             run.Append(rp);
             run.Append(new Text(text) { Space = SpaceProcessingModeValues.Preserve });
+            return run;
+        }
 
+        private Paragraph CreateComplexParagraph(JustificationValues justify, string lineSpacing, params Run[] runs)
+        {
             var para = new Paragraph();
             var pp = new ParagraphProperties(new Justification() { Val = justify });
-            var spacing = new SpacingBetweenLines() { After = "0" };
             if (!string.IsNullOrEmpty(lineSpacing))
             {
-                spacing.Line = lineSpacing;
-                spacing.LineRule = LineSpacingRuleValues.Auto;
+                pp.Append(new SpacingBetweenLines() { Line = lineSpacing, LineRule = LineSpacingRuleValues.Auto });
             }
-            pp.Append(spacing);
             para.Append(pp);
-            para.Append(run);
+            foreach (var run in runs) para.Append(run);
             return para;
         }
 
-        private Paragraph CreateMixedParagraph(string boldLabel, string normalValue, int fontSize = 22, string lineSpacing = null)
+        private Paragraph CreateStyledParagraph(string text, JustificationValues justify, bool bold, int fontSize, string fontName = "Times New Roman", bool italic = false, string lineSpacing = null)
         {
-            var para = new Paragraph();
-            var pp = new ParagraphProperties(new Justification() { Val = JustificationValues.Left });
-            var spacing = new SpacingBetweenLines() { After = "0" };
-            if (!string.IsNullOrEmpty(lineSpacing))
-            {
-                spacing.Line = lineSpacing;
-                spacing.LineRule = LineSpacingRuleValues.Auto;
-            }
-            pp.Append(spacing);
-            para.Append(pp);
-
-            var boldRun = new Run();
-            var boldRp = new RunProperties();
-            boldRp.Append(new RunFonts() { Ascii = "Times New Roman", HighAnsi = "Times New Roman", ComplexScript = "Times New Roman" });
-            boldRp.Append(new FontSize() { Val = fontSize.ToString() });
-            boldRp.Append(new FontSizeComplexScript() { Val = fontSize.ToString() });
-            boldRp.Append(new Bold());
-            boldRp.Append(new Color() { Val = "000000" });
-            boldRun.Append(boldRp);
-            boldRun.Append(new Text(boldLabel) { Space = SpaceProcessingModeValues.Preserve });
-
-            var normalRun = new Run();
-            var normalRp = new RunProperties();
-            normalRp.Append(new RunFonts() { Ascii = "Times New Roman", HighAnsi = "Times New Roman", ComplexScript = "Times New Roman" });
-            normalRp.Append(new FontSize() { Val = fontSize.ToString() });
-            normalRp.Append(new FontSizeComplexScript() { Val = fontSize.ToString() });
-            normalRp.Append(new Color() { Val = "000000" });
-            normalRun.Append(normalRp);
-            normalRun.Append(new Text(normalValue) { Space = SpaceProcessingModeValues.Preserve });
-
-            para.Append(boldRun);
-            para.Append(normalRun);
-            return para;
+            var run = CreateRun(text, bold, fontName, fontSize, "000000");
+            if (italic) run.RunProperties.Append(new Italic());
+            return CreateComplexParagraph(justify, lineSpacing, run);
         }
 
         private Drawing GetImageElement(string relationshipId, long w, long h)
