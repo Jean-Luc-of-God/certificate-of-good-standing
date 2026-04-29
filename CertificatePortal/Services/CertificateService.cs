@@ -204,7 +204,7 @@ namespace CertificatePortal.Services
         {
             var sectionProps = new SectionProperties();
             var pageSize = new PageSize() { Width = 11906U, Height = 16838U };
-            var pageMargin = new PageMargin() { Top = 1417, Bottom = 1417, Left = 1417, Right = 1417 };
+            var pageMargin = new PageMargin() { Top = 450, Bottom = 1440, Left = 1440, Right = 1440 };
             sectionProps.Append(pageSize, pageMargin);
             body.Append(sectionProps);
         }
@@ -233,7 +233,7 @@ namespace CertificatePortal.Services
             rightCell.AppendChild(new TableCellProperties(new TableWidth { Type = TableWidthUnitValues.Pct, Width = "4000" }, new TableCellVerticalAlignment { Val = TableVerticalAlignmentValues.Center }));
             rightCell.Append(CreateStyledParagraph("Adventist University of Central Africa", JustificationValues.Center, true, 28, "Times New Roman"));
             rightCell.Append(CreateStyledParagraph("P.O. Box 2461 Kigali, Rwanda  |  www.auca.ac.rw  |  info@auca.ac.rw", JustificationValues.Center, false, 18, "Times New Roman"));
-            rightCell.Append(CreateStyledParagraph("Directorate for Admissions and Academic Records", JustificationValues.Center, false, 22, "Times New Roman", italic: true));
+            rightCell.Append(CreateStyledParagraph("Directorate for Admissions and Academic Records", JustificationValues.Center, false, 44, "Edwardian Script ITC", italic: false));
             rightCell.Append(CreateStyledParagraph("Mobile Phone: (+250)724 796 996 / 724 474 805/ 788 473 035", JustificationValues.Center, false, 18, "Times New Roman"));
             rightCell.Append(CreateStyledParagraph("Email: registrar@auca.ac.rw  ||  juvenal.nsengiyumva@auca.ac.rw", JustificationValues.Center, false, 18, "Times New Roman"));
             row.Append(rightCell);
@@ -250,37 +250,37 @@ namespace CertificatePortal.Services
             // After header table
             body.Append(new Paragraph(new ParagraphProperties(new SpacingBetweenLines() { After = "200" })));
 
-            body.Append(CreateStyledParagraph(model.CityAndDate, JustificationValues.Right, false, 22));
+            body.Append(CreateStyledParagraph(model.CityAndDate, JustificationValues.Left, false, 24, lineSpacing: "360"));
             
-            var titleP = CreateStyledParagraph("CERTIFICATE OF GOOD STANDING", JustificationValues.Center, true, 28);
+            var titleP = CreateStyledParagraph("CERTIFICATE OF GOOD STANDING", JustificationValues.Center, true, 27);
             titleP.GetFirstChild<Run>().RunProperties.Append(new Underline() { Val = UnderlineValues.Single });
             // Title spacing
             titleP.GetFirstChild<ParagraphProperties>().Append(new SpacingBetweenLines() { Before = "400", After = "400" });
             body.Append(titleP);
 
-            body.Append(CreateStyledParagraph($"I, the undersigned, Eng. Nsengiyumva Juvenal, Director for Admissions and Academic Records of Adventist University of Central Africa, hereby certify that:", JustificationValues.Both, false, 22));
+            body.Append(CreateStyledParagraph($"I, the undersigned, Eng. Nsengiyumva Juvenal, Director for Admissions and Academic Records of Adventist University of Central Africa, hereby certify that:", JustificationValues.Both, false, 22, lineSpacing: "360"));
             
             // One empty paragraph after intro
             body.Append(new Paragraph(new Run(new Text(""))));
 
-            body.Append(CreateStyledParagraph(model.Record.StudentName, JustificationValues.Left, true, 24));
-            body.Append(CreateStyledParagraph($"Born on {model.FormattedBirthDate}", JustificationValues.Left, false, 22));
-            body.Append(CreateStyledParagraph($"has been a regular student of this University, registered under ID No. {model.Record.StudentID},", JustificationValues.Both, false, 22));
-            body.Append(CreateStyledParagraph($"From {model.Record.StudiedFrom} to {model.Record.StudiedTo}.", JustificationValues.Left, false, 22));
+            body.Append(CreateStyledParagraph(model.Record.StudentName, JustificationValues.Left, true, 24, lineSpacing: "360"));
+            body.Append(CreateStyledParagraph($"Born on {model.FormattedBirthDate}", JustificationValues.Left, false, 22, lineSpacing: "360"));
+            body.Append(CreateStyledParagraph($"has been a regular student of this University, registered under ID No. {model.Record.StudentID},", JustificationValues.Both, false, 22, lineSpacing: "360"));
+            body.Append(CreateStyledParagraph($"From {model.Record.StudiedFrom} to {model.Record.StudiedTo}.", JustificationValues.Left, false, 22, lineSpacing: "360"));
             
             // One empty paragraph before fields
             body.Append(new Paragraph(new Run(new Text(""))));
 
-            body.Append(CreateMixedParagraph("Year: ", model.Record.Year));
-            body.Append(CreateMixedParagraph("Faculty: ", model.Record.Faculty));
-            body.Append(CreateMixedParagraph("Major: ", model.Record.Major));
-            body.Append(CreateMixedParagraph("Academic year: ", model.Record.AcademicYear));
-            body.Append(CreateMixedParagraph("Validity: ", model.Record.AcademicYear));
+            body.Append(CreateMixedParagraph("Year: ", model.Record.Year, lineSpacing: "360"));
+            body.Append(CreateMixedParagraph("Faculty: ", model.Record.Faculty, lineSpacing: "360"));
+            body.Append(CreateMixedParagraph("Major: ", model.Record.Major, lineSpacing: "360"));
+            body.Append(CreateMixedParagraph("Academic year: ", model.Record.AcademicYear, lineSpacing: "360"));
+            body.Append(CreateMixedParagraph("Validity: ", model.Record.AcademicYear, lineSpacing: "360"));
             
             // One empty paragraph after fields with After="200"
             body.Append(new Paragraph(new ParagraphProperties(new SpacingBetweenLines() { After = "200" })));
 
-            body.Append(CreateStyledParagraph("This certificate is issued for any legal or administrative purpose it may serve", JustificationValues.Left, false, 22, italic: true));
+            body.Append(CreateStyledParagraph("This certificate is issued for any legal or administrative purpose it may serve", JustificationValues.Left, false, 22, italic: true, lineSpacing: "360"));
         }
 
         private void AddFooter(MainDocumentPart mainPart, Body body, CertificateViewModel model)
@@ -325,7 +325,7 @@ namespace CertificatePortal.Services
             return qrCode.GetGraphic(5);
         }
 
-        private Paragraph CreateStyledParagraph(string text, JustificationValues justify, bool bold, int fontSize, string fontName = "Times New Roman", bool italic = false)
+        private Paragraph CreateStyledParagraph(string text, JustificationValues justify, bool bold, int fontSize, string fontName = "Times New Roman", bool italic = false, string lineSpacing = null)
         {
             var run = new Run();
             var rp = new RunProperties();
@@ -344,19 +344,31 @@ namespace CertificatePortal.Services
             run.Append(new Text(text) { Space = SpaceProcessingModeValues.Preserve });
 
             var para = new Paragraph();
-            para.Append(new ParagraphProperties(
-                new Justification() { Val = justify },
-                new SpacingBetweenLines() { After = "0" }));
+            var pp = new ParagraphProperties(new Justification() { Val = justify });
+            var spacing = new SpacingBetweenLines() { After = "0" };
+            if (!string.IsNullOrEmpty(lineSpacing))
+            {
+                spacing.Line = lineSpacing;
+                spacing.LineRule = LineSpacingRuleValues.Auto;
+            }
+            pp.Append(spacing);
+            para.Append(pp);
             para.Append(run);
             return para;
         }
 
-        private Paragraph CreateMixedParagraph(string boldLabel, string normalValue, int fontSize = 22)
+        private Paragraph CreateMixedParagraph(string boldLabel, string normalValue, int fontSize = 22, string lineSpacing = null)
         {
             var para = new Paragraph();
-            para.Append(new ParagraphProperties(
-                new Justification() { Val = JustificationValues.Left },
-                new SpacingBetweenLines() { After = "0" }));
+            var pp = new ParagraphProperties(new Justification() { Val = JustificationValues.Left });
+            var spacing = new SpacingBetweenLines() { After = "0" };
+            if (!string.IsNullOrEmpty(lineSpacing))
+            {
+                spacing.Line = lineSpacing;
+                spacing.LineRule = LineSpacingRuleValues.Auto;
+            }
+            pp.Append(spacing);
+            para.Append(pp);
 
             var boldRun = new Run();
             var boldRp = new RunProperties();
