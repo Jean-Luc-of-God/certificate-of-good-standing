@@ -60,7 +60,7 @@
         font-size: 1.6rem;
         margin: 0;
         font-weight: bold;
-        color: black;
+        color: #003399;
     }
 
     .cert-header-text p {
@@ -69,15 +69,22 @@
     }
 
     .dept-line {
-        font-style: italic;
-        font-size: 1.1rem !important;
+        font-family: 'Edwardian Script ITC', cursive;
+        font-size: 2.2rem !important;
         margin-top: 4px !important;
+        font-style: normal !important;
+    }
+
+    .email-link {
+        color: blue;
+        text-decoration: underline;
     }
 
     .cert-date {
-        text-align: right;
+        text-align: left;
         margin-bottom: 2rem;
         font-size: 1.1rem;
+        font-weight: bold;
     }
 
     .cert-title {
@@ -88,7 +95,7 @@
     .cert-title h1 {
         font-family: 'Times New Roman', serif;
         font-size: 1.8rem;
-        text-decoration: underline;
+        text-decoration: none;
         font-weight: bold;
         color: black;
         text-transform: uppercase;
@@ -111,6 +118,10 @@
     }
 
     .field-label {
+        font-weight: normal;
+    }
+
+    .field-value {
         font-weight: bold;
     }
 
@@ -122,7 +133,7 @@
     }
 
     .qr-block {
-        text-align: right;
+        text-align: left;
     }
 
     .qr-image {
@@ -132,17 +143,25 @@
 
     .signature-block {
         text-align: left;
+        flex: 1;
+        margin-left: 2rem;
     }
 
     .sig-image {
         width: 150px;
         height: auto;
         margin-bottom: -10px;
+        float: right;
+    }
+
+    .footer-hr {
+        border: none;
+        border-top: 2px solid black;
+        margin-bottom: 10px;
     }
 
     .sig-name {
         font-weight: bold;
-        margin-top: 10px;
     }
 
     .btn {
@@ -165,6 +184,10 @@
     .btn-gold {
         background-color: var(--accent-color);
         color: var(--primary-color);
+    }
+
+    .no-wrap {
+        white-space: nowrap;
     }
 
     @@media print {
@@ -211,8 +234,11 @@
                 <h2>Adventist University of Central Africa</h2>
                 <p>P.O. Box 2461 Kigali, Rwanda | www.auca.ac.rw | info@auca.ac.rw</p>
                 <p class="dept-line">Directorate for Admissions and Academic Records</p>
-                <p>Mobile Phone: (+250)724 796 996 / 724 474 805/ 788 473 035</p>
-                <p>Email: registrar@auca.ac.rw || juvenal.nsengiyumva@auca.ac.rw</p>
+                <p>@Model.MobilePhoneLabel (+250)724 796 996 / 724 474 805/ 788 473 035</p>
+                <p>
+                    <a class="email-link">registrar@auca.ac.rw</a> || 
+                    <a class="email-link">juvenal.nsengiyumva@auca.ac.rw</a>
+                </p>
             </div>
         </div>
 
@@ -225,20 +251,20 @@
         </div>
 
         <div class="cert-body">
-            <p>I, the undersigned, <strong>Eng. Nsengiyumva Juvenal</strong>, Director for Admissions and Academic Records of Adventist University of Central Africa, hereby certify that:</p>
+            <p>I, the undersigned, <strong>Eng. Nsengiyumva Juvenal</strong>, <strong>Director for Admissions and Academic Records</strong> of the Adventist University of Central Africa, hereby certify that:</p>
 
             <div class="student-details">
-                <div class="student-name">@Model.Record.StudentName</div>
-                <div>Born on @Model.FormattedBirthDate</div>
-                <div>has been a regular student of this University, registered under ID No. @Model.Record.StudentID,</div>
-                <div>From @Model.Record.StudiedFrom to @Model.Record.StudiedTo.</div>
+                <div class="student-name">@Model.FormattedStudentName</div>
+                <div>Born on <strong>@Model.FormattedBirthDate</strong>,</div>
+                <div class="no-wrap">has been a regular student of this University, registered under <strong>ID No. @Model.Record.StudentID</strong>,</div>
+                <div>From <strong>@Model.Record.StudiedFrom</strong> to <strong>@Model.Record.StudiedTo</strong>.</div>
             </div>
 
-            <p><span class="field-label">Year:</span> @Model.Record.Year</p>
-            <p><span class="field-label">Faculty:</span> @Model.Record.Faculty</p>
-            <p><span class="field-label">Major:</span> @Model.Record.Major</p>
-            <p><span class="field-label">Academic year:</span> @Model.Record.AcademicYear</p>
-            <p><span class="field-label">Validity:</span> @Model.Record.AcademicYear</p>
+            <p style="margin: 2px 0;"><span class="field-label">Year:</span> <span class="field-value">@Model.Record.Year</span></p>
+            <p style="margin: 2px 0;"><span class="field-label">Faculty:</span> <span class="field-value">@Model.Record.Faculty</span></p>
+            <p style="margin: 2px 0;"><span class="field-label">Major:</span> <span class="field-value">@Model.Record.Major</span></p>
+            <p style="margin: 2px 0;"><span class="field-label">Academic year:</span> <span class="field-value">@Model.Record.AcademicYear</span></p>
+            <p style="margin: 2px 0;"><span class="field-label">Validity:</span> <span class="field-value">@Model.Record.AcademicYear</span></p>
 
             <p style="margin-top: 2rem; font-style: italic;">
                 This certificate is issued for any legal or administrative purpose it may serve
@@ -246,16 +272,18 @@
         </div>
 
         <div class="cert-footer">
+            <div class="qr-block">
+                <img src="data:image/png;base64,@qrBase64" class="qr-image" alt="QR Code" />
+                <p style="font-size: 0.85rem; margin-top: 0.5rem;">Scan to verify my Validity</p>
+            </div>
+
             <div class="signature-block">
                 <img src="~/images/signature.png" class="sig-image" alt="Signature" />
+                <div style="clear:both;"></div>
+                <hr class="footer-hr" />
                 <div class="sig-name">Eng. Nsengiyumva Juvenal</div>
                 <div>Director for Admissions and Academic Records</div>
                 <div>Adventist University of Central Africa</div>
-            </div>
-
-            <div class="qr-block">
-                <img src="data:image/png;base64,@qrBase64" class="qr-image" alt="QR Code" />
-                <p style="font-size: 0.8rem; margin-top: 0.5rem;">Scan to verify validity</p>
             </div>
         </div>
     </div>
