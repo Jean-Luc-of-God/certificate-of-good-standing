@@ -49,32 +49,32 @@ namespace CertificatePortal.Services
 
         public async Task<byte[]> GeneratePdfAsync(CertificateViewModel model, string host)
         {
-            var fetcher = new BrowserFetcher();
-            await fetcher.DownloadAsync();
-            
-            using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true });
+            using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { 
+                Headless = true,
+                Args = new[] { "--no-sandbox", "--disable-setuid-sandbox" } 
+            });
             using var page = await browser.NewPageAsync();
             
-            // Set viewport to A4 dimensions at 96 DPI to ensure CSS media queries trigger correctly
+            // Set viewport to A4
             await page.SetViewportAsync(new ViewPortOptions { Width = 794, Height = 1123 });
 
-            // Navigate to the preview page
-            await page.GoToAsync($"http://localhost:5000/Certificate/Preview/{model.Record.StudentID}", WaitUntilNavigation.Networkidle0);
+            // On the server, we talk to ourselves via localhost:8080 (our standard port)
+            // If that fails, we fallback to the public host
+            string internalUrl = $"http://localhost:8080/Certificate/Preview/{model.Record.StudentID}";
             
-            // Small extra delay to ensure all assets (logo, QR) are fully rendered
-            await Task.Delay(1000);
+            try {
+                await page.GoToAsync(internalUrl, WaitUntilNavigation.Networkidle0);
+            } catch {
+                await page.GoToAsync($"https://{host}/Certificate/Preview/{model.Record.StudentID}", WaitUntilNavigation.Networkidle0);
+            }
+            
+            await Task.Delay(500);
 
             return await page.PdfDataAsync(new PdfOptions
             {
                 Format = PuppeteerSharp.Media.PaperFormat.A4,
                 PrintBackground = true,
-                MarginOptions = new PuppeteerSharp.Media.MarginOptions 
-                { 
-                    Top = "0.4in", 
-                    Bottom = "0.4in", 
-                    Left = "0.4in", 
-                    Right = "0.4in" 
-                }
+                MarginOptions = new PuppeteerSharp.Media.MarginOptions { Top = "0", Bottom = "0", Left = "0", Right = "0" }
             });
         }
 

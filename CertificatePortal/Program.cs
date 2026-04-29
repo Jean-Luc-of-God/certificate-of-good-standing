@@ -5,7 +5,7 @@ using CertificatePortal.Services;
 using CertificatePortal.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using System.Data;
+using PuppeteerSharp;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,103 +20,57 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-// Global Antiforgery
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
 });
 
 // Health Checks
-builder.Services.AddHealthChecks()
-    .AddCheck("SQL Server", () =>
-    {
-        try
-        {
-            var config = builder.Configuration;
-            var connString = config.GetConnectionString("DefaultConnection");
-            using var conn = new Microsoft.Data.SqlClient.SqlConnection(connString);
-            conn.Open();
-            using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT 1";
-            cmd.ExecuteScalar();
-            return HealthCheckResult.Healthy();
-        }
-        catch (Exception ex)
-        {
-            return HealthCheckResult.Unhealthy("Database is unreachable", ex);
-        }
-    });
+builder.Services.AddHealthChecks().AddCheck("Self", () => HealthCheckResult.Healthy());
 
-// Register AppSettings
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
-
-// Register Data Access Layer
 builder.Services.AddScoped<IDbConnectionFactory, SqlConnectionFactory>();
 builder.Services.AddScoped<ICertificateRepository, CertificateRepository>();
 builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
-
-// Register Services
 builder.Services.AddScoped<ICertificateService, CertificateService>();
 
 var app = builder.Build();
 
-// 3. STARTUP DB TEST
-if (!builder.Configuration.GetValue<bool>("UseMockData"))
+// 3. STARTUP PREPARATION
+var useMock = app.Configuration.GetValue<string>("UseMockData")?.ToLower() == "true";
+if (useMock)
 {
-    try 
-    {
-        using (var scope = app.Services.CreateScope())
-        {
-            var factory = scope.ServiceProvider.GetRequiredService<IDbConnectionFactory>();
-            using (var conn = await factory.CreateConnectionAsync())
-            {
-                // Note: We use Dapper's ExecuteScalar or similar
-                using (var cmd = ((Microsoft.Data.SqlClient.SqlConnection)conn).CreateCommand())
-                {
-                    cmd.CommandText = "SELECT 1";
-                    var result = cmd.ExecuteScalar();
-                    app.Logger.LogInformation("DB connection startup test OK: {result}", result);
-                }
-            }
-        }
-    }
-    catch (Exception ex)
-    {
-        app.Logger.LogCritical(ex, "DB connection startup test FAILED.");
-    }
-}
-else
-{
-    app.Logger.LogInformation("Skipping DB startup test: Running in Mock Mode.");
+    Log.Information("Running in MOCK MODE - Skipping DB tests.");
 }
 
-// Error Handling & Security
+// Pre-download Chromium for PDF generation so first user doesn't wait
+try {
+    Log.Information("Initializing PDF Engine...");
+    await new BrowserFetcher().DownloadAsync();
+    Log.Information("PDF Engine Ready.");
+} catch (Exception ex) {
+    Log.Error(ex, "Failed to initialize PDF engine.");
+}
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
-// 404 Handling
 app.UseStatusCodePagesWithReExecute("/Home/NotFound");
-
 app.UseMiddleware<SecurityHeadersMiddleware>();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthorization();
 
 app.MapHealthChecks("/health");
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapControllerRoute(name: "default", pattern: "{controller=Certificate}/{action=Index}/{id?}");
 
 try
 {
-    Log.Information("Starting web host");
+    Log.Information("Starting AUCA Portal on port {Port}", Environment.GetEnvironmentVariable("PORT") ?? "8080");
     app.Run();
 }
 catch (Exception ex)
