@@ -12,6 +12,7 @@
 }
 
 <style>
+    @@font-face { font-family: 'Edwardian Script ITC'; src: local('Edwardian Script ITC'), local('EdwardianScriptITC'); }
     .preview-container { max-width: 950px; margin: 0 auto; }
     .preview-actions { display: flex; justify-content: space-between; margin-bottom: 1.5rem; }
     .certificate-card {
@@ -25,10 +26,11 @@
     .header-text-cell { vertical-align: middle; text-align: left; padding-left: 15px; }
     .uni-title { font-size: 1.55rem; margin: 0; font-weight: 500; color: #003399; }
     .header-p { margin: 1px 0; font-size: 0.88rem; }
-    .dept-line { font-family: 'Edwardian Script ITC', cursive; font-size: 2.7rem !important; margin: 2px 0 !important; font-weight: bold; color: black; line-height: 0.8; }
+    .dept-line { font-family: 'Edwardian Script ITC', 'Brush Script MT', cursive; font-size: 2.7rem !important; margin: 2px 0 !important; font-weight: bold; color: black; line-height: 0.8; }
     .email-link { color: blue; text-decoration: underline; }
     .black-text { color: black; font-weight: normal; }
-    .cert-date { text-align: left; margin-bottom: 20px; font-size: 1.2rem; font-weight: bold; }
+    .cert-date { text-align: left; margin-bottom: 20px; font-size: 1.2rem; font-weight: normal; }
+
     .cert-title { text-align: center; margin: 25px 0; font-size: 1.8rem; font-weight: bold; text-transform: uppercase; }
     .cert-body { font-size: 1.2rem; line-height: 1.5; text-align: justify; }
     .student-details { margin: 10px 0; }
@@ -74,7 +76,7 @@
                     <h2 class="uni-title">Adventist University of Central Africa</h2>
                     <p class="header-p">P.O. Box 2461 Kigali, Rwanda | www.auca.ac.rw | info@auca.ac.rw</p>
                     <p class="dept-line">Directorate for Admissions and Academic Records</p>
-                    <p class="header-p" style="margin-top: 10px;">Mobile Phone : (+250) 724 796 996 / 724 474 805 / 788 473 035</p>
+                    <p class="header-p" style="margin-top: 8px;">Mobile Phone : (+250) 724 796 996 / 724 474 805 / 788 473 035</p>
                     <p class="header-p"><span class="black-text">Email: </span><a class="email-link">registrar@auca.ac.rw</a> <span class="black-text"> || </span> <a class="email-link">juvenal.nsengiyumva@auca.ac.rw</a></p>
                 </td>
             </tr>
@@ -82,7 +84,7 @@
         <div class="cert-date">@Model.CityAndDate</div>
         <div class="cert-title">CERTIFICATE OF GOOD STANDING</div>
         <div class="cert-body">
-            <p>I, the undersigned, <strong>Eng. Nsengiyumva Juvenal</strong>, <strong>Director for Admissions and Academic Records</strong> of the Adventist University of Central Africa, hereby certify that:</p>
+            <p>I, the undersigned, Eng. Nsengiyumva Juvenal, Director for Admissions and Academic Records of the Adventist University of Central Africa, hereby certify that:</p>
             <div class="student-details">
                 <div class="student-name">@Model.FormattedStudentName</div>
                 <div>Born on <strong>@Model.FormattedBirthDate</strong>,</div>

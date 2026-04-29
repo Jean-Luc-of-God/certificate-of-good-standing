@@ -99,8 +99,9 @@ namespace CertificatePortal.Services
                     .email-link {{ color: #0000FF; text-decoration: underline; font-weight: normal; }}
                     .black-text {{ color: black !important; text-decoration: none !important; font-weight: normal; }}
                     
-                    .date {{ text-align: left; margin-bottom: 20px; font-size: 1.2rem; font-weight: bold; }}
-                    .title {{ text-align: center; margin: 25px 0; font-size: 1.8rem; font-weight: bold; text-decoration: none; text-transform: uppercase; }}
+                    .date { text-align: left; margin-bottom: 20px; font-size: 1.2rem; font-weight: normal; }
+                    .title { text-align: center; margin: 25px 0; font-size: 1.8rem; font-weight: bold; text-decoration: none; text-transform: uppercase; }
+
                     .body-p {{ text-align: justify; font-size: 1.2rem; line-height: 1.5; margin: 8px 0; }}
                     .student-name {{ font-size: 1.45rem; font-weight: bold; margin: 15px 0 5px 0; }}
                     .no-wrap {{ white-space: nowrap; }}
@@ -138,7 +139,7 @@ namespace CertificatePortal.Services
                     </table>
                     <div class='date'>{model.CityAndDate}</div>
                     <div class='title'>CERTIFICATE OF GOOD STANDING</div>
-                    <div class='body-p'>I, the undersigned, <b>Eng. Nsengiyumva Juvenal</b>, <b>Director for Admissions and Academic Records</b> of the Adventist University of Central Africa, hereby certify that:</div>
+                    <div class='body-p'>I, the undersigned, Eng. Nsengiyumva Juvenal, Director for Admissions and Academic Records of the Adventist University of Central Africa, hereby certify that:</div>
                     <div class='student-name'>{model.FormattedStudentName}</div>
                     <div class='body-p'>Born on <b>{model.FormattedBirthDate}</b>,<br><span class='no-wrap'>has been a regular student of this University, registered under <b>ID No. {model.Record.StudentID}</b>,</span><br>From <b>{model.Record.StudiedFrom}</b> to <b>{model.Record.StudiedTo}</b>.</div>
                     <div class='field'><span class='field-label'>Year:</span> <span class='field-value'>{model.Record.Year}</span></div>
@@ -227,11 +228,11 @@ namespace CertificatePortal.Services
         private void AddContent(Body body, CertificateViewModel model)
         {
             body.Append(new Paragraph(new ParagraphProperties(new SpacingBetweenLines() { After = "200" })));
-            body.Append(CreateStyledParagraph(model.CityAndDate, JustificationValues.Left, true, 24, lineSpacing: "360"));
+            body.Append(CreateStyledParagraph(model.CityAndDate, JustificationValues.Left, false, 24, lineSpacing: "360"));
             var titleP = CreateStyledParagraph("CERTIFICATE OF GOOD STANDING", JustificationValues.Center, true, 27);
             titleP.GetFirstChild<ParagraphProperties>().Append(new SpacingBetweenLines() { Before = "400", After = "400" });
             body.Append(titleP);
-            body.Append(CreateComplexParagraph(JustificationValues.Both, "360", CreateRun("I, the undersigned, ", false, "Helvetica", 21, "443742"), CreateRun("Eng. Nsengiyumva Juvenal", true, "Helvetica", 21, "443742"), CreateRun(", ", false, "Helvetica", 21, "443742"), CreateRun("Director for Admissions and Academic Records", true, "Helvetica", 21, "443742"), CreateRun(" of the Adventist University of Central Africa, hereby certify that:", false, "Helvetica", 21, "443742")));
+            body.Append(CreateComplexParagraph(JustificationValues.Both, "360", CreateRun("I, the undersigned, ", false, "Helvetica", 21, "443742"), CreateRun("Eng. Nsengiyumva Juvenal", false, "Helvetica", 21, "443742"), CreateRun(", ", false, "Helvetica", 21, "443742"), CreateRun("Director for Admissions and Academic Records", false, "Helvetica", 21, "443742"), CreateRun(" of the Adventist University of Central Africa, hereby certify that:", false, "Helvetica", 21, "443742")));
             body.Append(CreateComplexParagraph(JustificationValues.Left, "360", CreateRun(model.FormattedStudentName, true, "Helvetica", 21, "443742")));
             body.Append(CreateComplexParagraph(JustificationValues.Left, "360", CreateRun("Born on ", false, "Times New Roman", 24, "000000"), CreateRun(model.FormattedBirthDate + ",", true, "Times New Roman", 24, "000000")));
             body.Append(CreateComplexParagraph(JustificationValues.Left, "360", CreateRun("has been a regular student of this University, registered under ", false, "Times New Roman", 24, "000000"), CreateRun("ID No. ", true, "Times New Roman", 24, "000000"), CreateRun(model.Record.StudentID + ",", true, "Times New Roman", 24, "000000")));
