@@ -30,7 +30,7 @@ public class HomeController : Controller
     }
 
     [Route("/Home/NotFound")]
-    public IActionResult NotFound()
+    public new IActionResult NotFound()
     {
         return View();
     }

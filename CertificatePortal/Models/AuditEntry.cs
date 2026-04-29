@@ -4,10 +4,10 @@ namespace CertificatePortal.Models
 {
     public class AuditEntry
     {
-        public string Action { get; set; }
-        public string StudentID { get; set; }
+        public required string Action { get; set; }
+        public required string StudentID { get; set; }
         public DateTime PerformedAt { get; set; } = DateTime.UtcNow;
-        public string IPAddress { get; set; }
-        public string UserAgent { get; set; }
+        public required string IPAddress { get; set; }
+        public required string UserAgent { get; set; }
     }
 }

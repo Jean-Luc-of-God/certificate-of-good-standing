@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using CertificatePortal.Models;
 using CertificatePortal.Models.ViewModels;
@@ -210,10 +211,10 @@ namespace CertificatePortal.Services
             rightCell.Append(CreateStyledParagraph("Mobile Phone : (+250)724 796 996 / 724 474 805/ 788 473 035", JustificationValues.Center, false, 18, "Times New Roman"));
             var emailPara = new Paragraph(new ParagraphProperties(new Justification() { Val = JustificationValues.Center }));
             var email1 = CreateRun("registrar@auca.ac.rw", false, "Times New Roman", 18, "0000FF");
-            email1.RunProperties.Append(new Underline() { Val = UnderlineValues.Single });
+            email1.GetFirstChild<RunProperties>()?.Append(new Underline() { Val = UnderlineValues.Single });
             var separator = CreateRun("  ||  ", false, "Times New Roman", 18, "000000");
             var email2 = CreateRun("juvenal.nsengiyumva@auca.ac.rw", false, "Times New Roman", 18, "0000FF");
-            email2.RunProperties.Append(new Underline() { Val = UnderlineValues.Single });
+            email2.GetFirstChild<RunProperties>()?.Append(new Underline() { Val = UnderlineValues.Single });
             emailPara.Append(email1, separator, email2);
             rightCell.Append(emailPara);
             row.Append(rightCell);
@@ -221,8 +222,11 @@ namespace CertificatePortal.Services
             header.Append(table);
             header.Append(new Paragraph(new ParagraphProperties(new ParagraphBorders(new BottomBorder() { Val = BorderValues.Single, Size = 6U, Space = 1U, Color = "000000" }))));
             headerPart.Header = header;
-            var sectionProps = body.Elements<SectionProperties>().LastOrDefault() ?? new SectionProperties();
-            sectionProps.PrependChild(new HeaderReference() { Type = HeaderFooterValues.Default, Id = mainPart.GetIdOfPart(headerPart) });
+            var sectionProps = body.Elements<SectionProperties>().LastOrDefault();
+            if (sectionProps != null)
+            {
+                sectionProps.PrependChild(new HeaderReference() { Type = HeaderFooterValues.Default, Id = mainPart.GetIdOfPart(headerPart) });
+            }
         }
 
         private void AddContent(Body body, CertificateViewModel model)
@@ -230,7 +234,7 @@ namespace CertificatePortal.Services
             body.Append(new Paragraph(new ParagraphProperties(new SpacingBetweenLines() { After = "200" })));
             body.Append(CreateStyledParagraph(model.CityAndDate, JustificationValues.Left, false, 24, lineSpacing: "360"));
             var titleP = CreateStyledParagraph("CERTIFICATE OF GOOD STANDING", JustificationValues.Center, true, 27);
-            titleP.GetFirstChild<ParagraphProperties>().Append(new SpacingBetweenLines() { Before = "400", After = "400" });
+            titleP.GetFirstChild<ParagraphProperties>()?.Append(new SpacingBetweenLines() { Before = "400", After = "400" });
             body.Append(titleP);
             body.Append(CreateComplexParagraph(JustificationValues.Both, "360", CreateRun("I, the undersigned, ", false, "Helvetica", 21, "443742"), CreateRun("Eng. Nsengiyumva Juvenal", false, "Helvetica", 21, "443742"), CreateRun(", ", false, "Helvetica", 21, "443742"), CreateRun("Director for Admissions and Academic Records", false, "Helvetica", 21, "443742"), CreateRun(" of the Adventist University of Central Africa, hereby certify that:", false, "Helvetica", 21, "443742")));
             body.Append(CreateComplexParagraph(JustificationValues.Left, "360", CreateRun(model.FormattedStudentName, true, "Helvetica", 21, "443742")));
@@ -302,7 +306,7 @@ namespace CertificatePortal.Services
             return run;
         }
 
-        private Paragraph CreateComplexParagraph(JustificationValues justify, string lineSpacing, params Run[] runs)
+        private Paragraph CreateComplexParagraph(JustificationValues justify, string? lineSpacing, params Run[] runs)
         {
             var para = new Paragraph();
             var pp = new ParagraphProperties(new Justification() { Val = justify });
@@ -312,10 +316,10 @@ namespace CertificatePortal.Services
             return para;
         }
 
-        private Paragraph CreateStyledParagraph(string text, JustificationValues justify, bool bold, int fontSize, string fontName = "Times New Roman", bool italic = false, string lineSpacing = null)
+        private Paragraph CreateStyledParagraph(string text, JustificationValues justify, bool bold, int fontSize, string fontName = "Times New Roman", bool italic = false, string? lineSpacing = null)
         {
             var run = CreateRun(text, bold, fontName, fontSize, "000000");
-            if (italic) run.RunProperties.Append(new Italic());
+            if (italic) run.GetFirstChild<RunProperties>()?.Append(new Italic());
             return CreateComplexParagraph(justify, lineSpacing, run);
         }
 

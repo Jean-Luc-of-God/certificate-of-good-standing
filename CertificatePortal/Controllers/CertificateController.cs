@@ -40,7 +40,7 @@ namespace CertificatePortal.Controllers
         [Route("Certificate/Index")]
         public IActionResult Index()
         {
-            return View(new CertificateSearchViewModel());
+            return View(new CertificateSearchViewModel { Query = "" });
         }
 
         [HttpPost]
