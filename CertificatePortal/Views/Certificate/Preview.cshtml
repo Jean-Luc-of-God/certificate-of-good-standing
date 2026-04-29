@@ -37,28 +37,33 @@
         flex-direction: column;
     }
 
-    /* Header Styling */
-    .cert-header {
+    /* Header Table Layout */
+    .header-table {
         width: 100%;
-        border-bottom: 2px solid #000;
-        padding-bottom: 1rem;
-        margin-bottom: 2rem;
-        display: flex;
-        align-items: center;
+        border-bottom: 2.5px solid #000;
+        padding-bottom: 10px;
+        margin-bottom: 25px;
+        border-collapse: collapse;
+    }
+
+    .logo-cell {
+        width: 100px;
+        vertical-align: middle;
         text-align: left;
     }
 
     .cert-logo {
-        width: 95px;
+        width: 90px;
         height: auto;
     }
 
-    .cert-header-text {
-        flex: 1;
-        margin-left: 1.5rem;
+    .header-text-cell {
+        vertical-align: middle;
+        text-align: left;
+        padding-left: 15px;
     }
 
-    .cert-header-text h2 {
+    .uni-title {
         font-family: 'Times New Roman', serif;
         font-size: 1.6rem;
         margin: 0;
@@ -66,25 +71,22 @@
         color: #003399;
     }
 
-    .cert-header-text p {
+    .header-p {
         margin: 1px 0;
         font-size: 0.9rem;
     }
 
     .dept-line {
         font-family: 'Edwardian Script ITC', cursive;
-        font-size: 2.4rem !important;
+        font-size: 2.6rem !important;
         margin: 4px 0 !important;
         font-style: normal !important;
         font-weight: bold;
         color: black;
+        line-height: 0.9;
     }
 
-    .contact-info {
-        margin-top: 10px !important;
-    }
-
-    .label-black {
+    .black-text {
         color: black;
         font-weight: normal;
     }
@@ -127,7 +129,7 @@
     }
 
     .student-name {
-        font-size: 1.4rem;
+        font-size: 1.45rem;
         font-weight: bold;
         margin-bottom: 0.5rem;
     }
@@ -152,40 +154,49 @@
         padding-bottom: 1rem;
     }
 
-    .footer-top-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        margin-bottom: 0.5rem;
+    .footer-table {
+        width: 100%;
+        border-collapse: collapse;
     }
 
-    .qr-block {
+    .footer-cell-left {
+        width: 50%;
+        vertical-align: bottom;
         text-align: left;
     }
 
-    .qr-image {
-        width: 100px;
-        height: 100px;
-    }
-
-    .verify-text {
-        font-size: 0.9rem;
-        margin-top: 0.5rem;
-    }
-
-    .signature-block {
+    .footer-cell-right {
+        width: 50%;
+        vertical-align: bottom;
         text-align: right;
     }
 
     .sig-image {
-        width: 160px;
+        width: 165px;
         height: auto;
+        margin-bottom: 2px;
+        display: block;
+    }
+
+    .qr-image {
+        width: 105px;
+        height: 105px;
+        display: block;
+        margin-left: auto;
+    }
+
+    .verify-text {
+        font-size: 0.9rem;
+        margin-top: 5px;
+        text-align: center;
+        width: 105px;
+        float: right;
     }
 
     .footer-hr {
         border: none;
-        border-top: 2px solid black;
-        margin: 0 0 1rem 0;
+        border-top: 1.5px solid black;
+        margin: 5px 0 10px 0;
         width: 100%;
     }
 
@@ -195,7 +206,7 @@
         font-size: 1.15rem;
     }
 
-    .sig-name {
+    .dir-name {
         font-weight: bold;
     }
 
@@ -259,21 +270,25 @@
     </div>
 
     <div class="certificate-card">
-        <div class="cert-header">
-            <img src="~/images/auca-logo.png" class="cert-logo" alt="AUCA Logo" />
-            <div class="cert-header-text">
-                <h2>Adventist University of Central Africa</h2>
-                <p>P.O. Box 2461 Kigali, Rwanda | www.auca.ac.rw | info@auca.ac.rw</p>
-                <p class="dept-line">Directorate for Admissions and Academic Records</p>
-                <p class="contact-info">Mobile Phone : (+250) 724 796 996 / 724 474 805 / 788 473 035</p>
-                <p>
-                    <span class="label-black">Email: </span>
-                    <a class="email-link">registrar@auca.ac.rw</a> 
-                    <span class="label-black">||</span> 
-                    <a class="email-link">juvenal.nsengiyumva@auca.ac.rw</a>
-                </p>
-            </div>
-        </div>
+        <table class="header-table">
+            <tr>
+                <td class="logo-cell">
+                    <img src="~/images/auca-logo.png" class="cert-logo" alt="AUCA Logo" />
+                </td>
+                <td class="header-text-cell">
+                    <h2 class="uni-title">Adventist University of Central Africa</h2>
+                    <p class="header-p">P.O. Box 2461 Kigali, Rwanda | www.auca.ac.rw | info@auca.ac.rw</p>
+                    <p class="dept-line">Directorate for Admissions and Academic Records</p>
+                    <p class="header-p" style="margin-top: 10px;">Mobile Phone : (+250) 724 796 996 / 724 474 805 / 788 473 035</p>
+                    <p class="header-p">
+                        <span class="black-text">Email: </span>
+                        <a class="email-link">registrar@auca.ac.rw</a> 
+                        <span class="black-text"> || </span> 
+                        <a class="email-link">juvenal.nsengiyumva@auca.ac.rw</a>
+                    </p>
+                </td>
+            </tr>
+        </table>
 
         <div class="cert-date">
             @Model.CityAndDate
@@ -293,33 +308,34 @@
                 <div>From <strong>@Model.Record.StudiedFrom</strong> to <strong>@Model.Record.StudiedTo</strong>.</div>
             </div>
 
-            <p style="margin: 2px 0;"><span class="field-label">Year:</span> <span class="field-value">@Model.Record.Year</span></p>
-            <p style="margin: 2px 0;"><span class="field-label">Faculty:</span> <span class="field-value">@Model.Record.Faculty</span></p>
-            <p style="margin: 2px 0;"><span class="field-label">Major:</span> <span class="field-value">@Model.Record.Major</span></p>
-            <p style="margin: 2px 0;"><span class="field-label">Academic year:</span> <span class="field-value">@Model.Record.AcademicYear</span></p>
-            <p style="margin: 2px 0;"><span class="field-label">Validity:</span> <span class="field-value">@Model.Record.AcademicYear</span></p>
+            <p style="margin: 4px 0;"><span class="field-label">Year:</span> <span class="field-value">@Model.Record.Year</span></p>
+            <p style="margin: 4px 0;"><span class="field-label">Faculty:</span> <span class="field-value">@Model.Record.Faculty</span></p>
+            <p style="margin: 4px 0;"><span class="field-label">Major:</span> <span class="field-value">@Model.Record.Major</span></p>
+            <p style="margin: 4px 0;"><span class="field-label">Academic year:</span> <span class="field-value">@Model.Record.AcademicYear</span></p>
+            <p style="margin: 4px 0;"><span class="field-label">Validity:</span> <span class="field-value">@Model.Record.AcademicYear</span></p>
 
-            <p style="margin-top: 2.5rem; font-style: italic;">
+            <p style="margin-top: 35px;">
                 This certificate is issued for any legal or administrative purpose it may serve
             </p>
         </div>
 
         <div class="cert-footer">
-            <div class="footer-top-row">
-                <div class="qr-block">
-                    <img src="data:image/png;base64,@qrBase64" class="qr-image" alt="QR Code" />
-                    <div class="verify-text">Scan to verify my Validity</div>
-                </div>
-
-                <div class="signature-block">
-                    <img src="~/images/signature.png" class="sig-image" alt="Signature" />
-                </div>
-            </div>
+            <table class="footer-table">
+                <tr>
+                    <td class="footer-cell-left">
+                        <img src="~/images/signature.png" class="sig-image" alt="Signature" />
+                    </td>
+                    <td class="footer-cell-right">
+                        <img src="data:image/png;base64,@qrBase64" class="qr-image" alt="QR Code" />
+                        <div class="verify-text">Scan to verify my Validity</div>
+                    </td>
+                </tr>
+            </table>
             
             <hr class="footer-hr" />
             
             <div class="director-info">
-                <div class="sig-name">Eng. Nsengiyumva Juvenal</div>
+                <div class="dir-name">Eng. Nsengiyumva Juvenal</div>
                 <div>Director for Admissions and Academic Records</div>
                 <div>Adventist University of Central Africa</div>
             </div>

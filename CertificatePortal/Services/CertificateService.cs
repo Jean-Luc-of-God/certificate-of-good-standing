@@ -91,14 +91,10 @@ namespace CertificatePortal.Services
             using var browser = await Puppeteer.LaunchAsync(launchOptions);
             using var page = await browser.NewPageAsync();
             
-            // Set timeout to 0 (disabled) to prevent the error you saw
             page.DefaultNavigationTimeout = 0;
-            
             await page.SetViewportAsync(new ViewPortOptions { Width = 794, Height = 1123 });
 
             string html = GenerateHtmlContent(model);
-            
-            // Wait ONLY for the content to be loaded, not for external network resources
             await page.SetContentAsync(html, new NavigationOptions { WaitUntil = new[] { WaitUntilNavigation.Load } });
 
             return await page.PdfDataAsync(new PdfOptions
@@ -111,17 +107,14 @@ namespace CertificatePortal.Services
 
         private string GenerateHtmlContent(CertificateViewModel model)
         {
-            // Prepare Logo Base64
             string logoBase64 = "";
             var logoPath = Path.Combine(_env.WebRootPath, "images", "auca-logo.png");
             if (File.Exists(logoPath)) logoBase64 = Convert.ToBase64String(File.ReadAllBytes(logoPath));
 
-            // Prepare Signature Base64
             string sigBase64 = "";
             var sigPath = Path.Combine(_env.WebRootPath, "images", "signature.png");
             if (File.Exists(sigPath)) sigBase64 = Convert.ToBase64String(File.ReadAllBytes(sigPath));
 
-            // Prepare QR Code Base64
             var qrUrl = $"https://auca.ac.rw/verify/{model.Record.StudentID}";
             using var qrGenerator = new QRCodeGenerator();
             using var qrData = qrGenerator.CreateQrCode(qrUrl, QRCodeGenerator.ECCLevel.Q);
@@ -132,57 +125,69 @@ namespace CertificatePortal.Services
             <html>
             <head>
                 <style>
+                    @font-face {{
+                        font-family: 'Edwardian Script ITC';
+                        src: local('Edwardian Script ITC'), local('EdwardianScriptITC');
+                    }}
                     body {{ font-family: 'Times New Roman', serif; padding: 0; margin: 0; background: white; color: black; }}
                     .cert-card {{ width: 210mm; height: 297mm; padding: 2.5cm; box-sizing: border-box; position: relative; display: flex; flex-direction: column; }}
                     
-                    /* Header Styling */
-                    .header {{ display: flex; align-items: center; border-bottom: 2px solid black; padding-bottom: 10px; margin-bottom: 20px; }}
-                    .logo-img {{ width: 85px; height: 85px; }}
-                    .header-text {{ flex: 1; text-align: left; margin-left: 20px; }}
-                    .header-text h2 {{ margin: 0; font-size: 1.5rem; font-weight: 500; color: #003399; }}
-                    .header-text p {{ margin: 1px 0; font-size: 0.85rem; }}
-                    .cursive-line {{ font-family: 'Edwardian Script ITC', cursive; font-size: 2.4rem !important; margin: 2px 0 !important; font-weight: bold; color: black; }}
-                    .contact-line {{ margin-top: 8px !important; }}
-                    .label-black {{ color: black; font-weight: normal; }}
-                    .email-link {{ color: blue; text-decoration: underline; }}
+                    .header-table {{ width: 100%; border-bottom: 2.5px solid black; padding-bottom: 10px; margin-bottom: 30px; border-collapse: collapse; }}
+                    .logo-cell {{ width: 100px; vertical-align: middle; text-align: left; }}
+                    .logo-img {{ width: 90px; height: auto; }}
+                    .header-text-cell {{ vertical-align: middle; text-align: left; padding-left: 15px; }}
                     
-                    /* Body Styling */
-                    .date {{ text-align: left; margin-bottom: 30px; font-size: 1.15rem; font-weight: bold; }}
-                    .title {{ text-align: center; margin: 35px 0; font-size: 1.7rem; font-weight: bold; text-decoration: none; }}
-                    .body-p {{ text-align: justify; font-size: 1.15rem; line-height: 1.6; margin: 12px 0; }}
-                    .student-name {{ font-size: 1.35rem; font-weight: bold; margin: 15px 0 10px 0; }}
+                    .uni-title {{ margin: 0; font-size: 1.55rem; font-weight: 500; color: #003399; font-family: 'Times New Roman', serif; }}
+                    .header-p {{ margin: 1px 0; font-size: 0.88rem; color: black; }}
+                    .cursive-line {{ font-family: 'Edwardian Script ITC', 'Brush Script MT', cursive; font-size: 2.7rem !important; margin: 2px 0 !important; font-weight: bold; color: black; line-height: 0.9; }}
+                    .email-link {{ color: #0000FF; text-decoration: underline; font-weight: normal; }}
+                    .black-text {{ color: black !important; text-decoration: none !important; font-weight: normal; }}
+                    
+                    .date {{ text-align: left; margin-bottom: 35px; font-size: 1.2rem; font-weight: bold; }}
+                    .title {{ text-align: center; margin: 40px 0; font-size: 1.8rem; font-weight: bold; text-decoration: none; text-transform: uppercase; }}
+                    .body-p {{ text-align: justify; font-size: 1.2rem; line-height: 1.65; margin: 12px 0; }}
+                    .student-name {{ font-size: 1.45rem; font-weight: bold; margin: 20px 0 10px 0; }}
                     .no-wrap {{ white-space: nowrap; }}
                     
-                    /* Data Fields */
-                    .field {{ margin: 1px 0; font-size: 1.15rem; }}
+                    .field {{ margin: 4px 0; font-size: 1.2rem; }}
                     .field-label {{ font-weight: normal; }}
                     .field-value {{ font-weight: bold; }}
                     
-                    /* Footer Styling */
-                    .footer-container {{ margin-top: auto; padding-bottom: 0.5cm; }}
-                    .sig-row {{ display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5px; }}
-                    .qr-block {{ text-align: left; }}
-                    .qr-img {{ width: 90px; height: 90px; }}
-                    .verify-text {{ font-size: 0.85rem; margin-top: 5px; }}
-                    .sig-block {{ text-align: right; }}
-                    .sig-img {{ width: 150px; height: auto; }}
-                    .footer-hr {{ border: none; border-top: 2px solid black; margin: 0 0 10px 0; width: 100%; }}
-                    .director-info {{ text-align: left; line-height: 1.4; font-size: 1.1rem; }}
+                    .footer-container {{ margin-top: auto; width: 100%; padding-bottom: 0.5cm; }}
+                    .footer-table {{ width: 100%; border-collapse: collapse; }}
+                    .footer-cell-left {{ width: 50%; vertical-align: bottom; text-align: left; }}
+                    .footer-cell-right {{ width: 50%; vertical-align: bottom; text-align: right; }}
+                    
+                    .sig-img {{ width: 165px; height: auto; margin-bottom: 2px; display: block; }}
+                    .footer-hr {{ border: none; border-top: 1px solid black; margin: 5px 0 10px 0; width: 100%; }}
+                    .director-info {{ line-height: 1.5; font-size: 1.15rem; text-align: left; }}
                     .dir-name {{ font-weight: bold; }}
+                    
+                    .qr-img {{ width: 105px; height: 105px; display: block; margin-left: auto; }}
+                    .verify-text {{ font-size: 0.9rem; margin-top: 5px; text-align: center; width: 105px; float: right; font-weight: normal; }}
                 </style>
             </head>
             <body>
                 <div class='cert-card'>
-                    <div class='header'>
-                        <img src='data:image/png;base64,{logoBase64}' class='logo-img'>
-                        <div class='header-text'>
-                            <h2>Adventist University of Central Africa</h2>
-                            <p>P.O. Box 2461 Kigali, Rwanda | www.auca.ac.rw | info@auca.ac.rw</p>
-                            <p class='cursive-line'>Directorate for Admissions and Academic Records</p>
-                            <p class='contact-line'>Mobile Phone : (+250) 724 796 996 / 724 474 805 / 788 473 035</p>
-                            <p><span class='label-black'>Email: </span><a class='email-link'>registrar@auca.ac.rw</a> <span class='label-black'>||</span> <a class='email-link'>juvenal.nsengiyumva@auca.ac.rw</a></p>
-                        </div>
-                    </div>
+                    <table class='header-table'>
+                        <tr>
+                            <td class='logo-cell'>
+                                <img src='data:image/png;base64,{logoBase64}' class='logo-img'>
+                            </td>
+                            <td class='header-text-cell'>
+                                <h2 class='uni-title'>Adventist University of Central Africa</h2>
+                                <p class='header-p'>P.O. Box 2461 Kigali, Rwanda | www.auca.ac.rw | info@auca.ac.rw</p>
+                                <p class='cursive-line'>Directorate for Admissions and Academic Records</p>
+                                <p class='header-p' style='margin-top: 10px;'>Mobile Phone : (+250) 724 796 996 / 724 474 805 / 788 473 035</p>
+                                <p class='header-p'>
+                                    <span class='black-text'>Email: </span>
+                                    <a class='email-link'>registrar@auca.ac.rw</a> 
+                                    <span class='black-text'> || </span> 
+                                    <a class='email-link'>juvenal.nsengiyumva@auca.ac.rw</a>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
 
                     <div class='date'>{model.CityAndDate}</div>
                     
@@ -206,20 +211,22 @@ namespace CertificatePortal.Services
                     <div class='field'><span class='field-label'>Academic year:</span> <span class='field-value'>{model.Record.AcademicYear}</span></div>
                     <div class='field'><span class='field-label'>Validity:</span> <span class='field-value'>{model.Record.AcademicYear}</span></div>
 
-                    <div class='body-p' style='margin-top: 30px; font-style: italic;'>
+                    <div class='body-p' style='margin-top: 35px;'>
                         This certificate is issued for any legal or administrative purpose it may serve
                     </div>
                     
                     <div class='footer-container'>
-                        <div class='sig-row'>
-                            <div class='qr-block'>
-                                <img src='data:image/png;base64,{qrBase64}' class='qr-img'><br>
-                                <div class='verify-text'>Scan to verify my Validity</div>
-                            </div>
-                            <div class='sig-block'>
-                                <img src='data:image/png;base64,{sigBase64}' class='sig-img'>
-                            </div>
-                        </div>
+                        <table class='footer-table'>
+                            <tr>
+                                <td class='footer-cell-left'>
+                                    <img src='data:image/png;base64,{sigBase64}' class='sig-img'>
+                                </td>
+                                <td class='footer-cell-right'>
+                                    <img src='data:image/png;base64,{qrBase64}' class='qr-img'>
+                                    <div class='verify-text'>Scan to verify my Validity</div>
+                                </td>
+                            </tr>
+                        </table>
                         <hr class='footer-hr'>
                         <div class='director-info'>
                             <div class='dir-name'>Eng. Nsengiyumva Juvenal</div>
@@ -264,19 +271,13 @@ namespace CertificatePortal.Services
             var rightCell = new TableCell();
             rightCell.AppendChild(new TableCellProperties(new TableWidth { Type = TableWidthUnitValues.Pct, Width = "4000" }, new TableCellVerticalAlignment { Val = TableVerticalAlignmentValues.Center }));
             
-            // University Name: Blue #003399
             var uniNameRun = CreateRun("Adventist University of Central Africa", true, "Times New Roman", 28, "003399");
             rightCell.Append(new Paragraph(new ParagraphProperties(new Justification() { Val = JustificationValues.Center }), uniNameRun));
 
             rightCell.Append(CreateStyledParagraph("P.O. Box 2461 Kigali, Rwanda  |  www.auca.ac.rw  |  info@auca.ac.rw", JustificationValues.Center, false, 18, "Times New Roman"));
-            
-            // Directorate: Edwardian Script ITC, 44pt
             rightCell.Append(CreateStyledParagraph("Directorate for Admissions and Academic Records", JustificationValues.Center, false, 44, "Edwardian Script ITC", italic: false));
-            
-            // Mobile: Space before colon
             rightCell.Append(CreateStyledParagraph("Mobile Phone : (+250)724 796 996 / 724 474 805/ 788 473 035", JustificationValues.Center, false, 18, "Times New Roman"));
             
-            // Email: Blue and Underlined, || separator
             var emailPara = new Paragraph(new ParagraphProperties(new Justification() { Val = JustificationValues.Center }));
             var email1 = CreateRun("registrar@auca.ac.rw", false, "Times New Roman", 18, "0000FF");
             email1.RunProperties.Append(new Underline() { Val = UnderlineValues.Single });
@@ -298,16 +299,12 @@ namespace CertificatePortal.Services
         private void AddContent(Body body, CertificateViewModel model)
         {
             body.Append(new Paragraph(new ParagraphProperties(new SpacingBetweenLines() { After = "200" })));
-
-            // Date: Left-Aligned
             body.Append(CreateStyledParagraph(model.CityAndDate, JustificationValues.Left, true, 24, lineSpacing: "360"));
             
-            // Title: Bold, Center, NO Underline
             var titleP = CreateStyledParagraph("CERTIFICATE OF GOOD STANDING", JustificationValues.Center, true, 27);
             titleP.GetFirstChild<ParagraphProperties>().Append(new SpacingBetweenLines() { Before = "400", After = "400" });
             body.Append(titleP);
 
-            // Intro: Helvetica 21pt, Color #443742. Added "the"
             body.Append(CreateComplexParagraph(JustificationValues.Both, "360",
                 CreateRun("I, the undersigned, ", false, "Helvetica", 21, "443742"),
                 CreateRun("Eng. Nsengiyumva Juvenal", true, "Helvetica", 21, "443742"),
@@ -316,25 +313,21 @@ namespace CertificatePortal.Services
                 CreateRun(" of the Adventist University of Central Africa, hereby certify that:", false, "Helvetica", 21, "443742")
             ));
 
-            // Student Name: Formatted (Title Case + Comma)
             body.Append(CreateComplexParagraph(JustificationValues.Left, "360",
                 CreateRun(model.FormattedStudentName, true, "Helvetica", 21, "443742")
             ));
 
-            // Born on: Normal, Date is Bold
             body.Append(CreateComplexParagraph(JustificationValues.Left, "360",
                 CreateRun("Born on ", false, "Times New Roman", 24, "000000"),
                 CreateRun(model.FormattedBirthDate + ",", true, "Times New Roman", 24, "000000")
             ));
 
-            // Registered under: ID is Bold. Single line enforced.
             body.Append(CreateComplexParagraph(JustificationValues.Left, "360",
                 CreateRun("has been a regular student of this University, registered under ", false, "Times New Roman", 24, "000000"),
                 CreateRun("ID No. ", true, "Times New Roman", 24, "000000"),
                 CreateRun(model.Record.StudentID + ",", true, "Times New Roman", 24, "000000")
             ));
 
-            // From: Dates are Bold
             body.Append(CreateComplexParagraph(JustificationValues.Left, "360",
                 CreateRun("From ", false, "Times New Roman", 24, "000000"),
                 CreateRun(model.Record.StudiedFrom, true, "Times New Roman", 24, "000000"),
@@ -342,7 +335,6 @@ namespace CertificatePortal.Services
                 CreateRun(model.Record.StudiedTo + ".", true, "Times New Roman", 24, "000000")
             ));
 
-            // Fields: Label Normal, Value Bold
             body.Append(CreateComplexParagraph(JustificationValues.Left, "240", CreateRun("Year: ", false, "Times New Roman", 24, "000000"), CreateRun(model.Record.Year, true, "Times New Roman", 24, "000000")));
             body.Append(CreateComplexParagraph(JustificationValues.Left, "240", CreateRun("Faculty: ", false, "Times New Roman", 24, "000000"), CreateRun(model.Record.Faculty, true, "Times New Roman", 24, "000000")));
             body.Append(CreateComplexParagraph(JustificationValues.Left, "240", CreateRun("Major: ", false, "Times New Roman", 24, "000000"), CreateRun(model.Record.Major, true, "Times New Roman", 24, "000000")));
@@ -352,7 +344,6 @@ namespace CertificatePortal.Services
             body.Append(new Paragraph(new ParagraphProperties(new SpacingBetweenLines() { After = "200" })));
 
             var italicRun = CreateRun("This certificate is issued for any legal or administrative purpose it may serve", false, "Times New Roman", 24, "000000");
-            italicRun.RunProperties.Append(new Italic());
             body.Append(CreateComplexParagraph(JustificationValues.Left, "360", italicRun));
         }
 
@@ -365,38 +356,34 @@ namespace CertificatePortal.Services
             table.AppendChild(tableProps);
             var row = new TableRow();
             
-            // Left Cell: QR Code
-            var leftCell = new TableCell(new TableCellProperties(new TableWidth { Type = TableWidthUnitValues.Pct, Width = "2000" }));
-            var qrBytes = GenerateQrCode($"https://auca.ac.rw/verify/{model.Record.StudentID}");
-            var qrPart = mainPart.AddImagePart(ImagePartType.Png);
-            using (var ms = new MemoryStream(qrBytes)) { qrPart.FeedData(ms); }
-            leftCell.Append(new Paragraph(new ParagraphProperties(new Justification() { Val = JustificationValues.Left }), new Run(new Drawing(GetImageElement(mainPart.GetIdOfPart(qrPart), 750000L, 750000L)))));
-            leftCell.Append(CreateStyledParagraph("Scan to verify my Validity", JustificationValues.Left, false, 18));
-            row.Append(leftCell);
-
-            // Right Cell: Signature + Info
-            var rightCell = new TableCell(new TableCellProperties(new TableWidth { Type = TableWidthUnitValues.Pct, Width = "3000" }));
+            var leftCell = new TableCell(new TableCellProperties(new TableWidth { Type = TableWidthUnitValues.Pct, Width = "2500" }));
             var sigPath = Path.Combine(_env.WebRootPath, "images", "signature.png");
             if (File.Exists(sigPath))
             {
                 var sigBytes = File.ReadAllBytes(sigPath);
                 var imagePart = mainPart.AddImagePart(ImagePartType.Png);
                 using (var stream = new MemoryStream(sigBytes)) { imagePart.FeedData(stream); }
-                // Signature aligned right
-                rightCell.Append(new Paragraph(new ParagraphProperties(new Justification() { Val = JustificationValues.Right }), new Run(new Drawing(GetImageElement(mainPart.GetIdOfPart(imagePart), 1143000L, 476250L)))));
+                leftCell.Append(new Paragraph(new Run(new Drawing(GetImageElement(mainPart.GetIdOfPart(imagePart), 1143000L, 476250L)))));
             }
-            
-            // Horizontal rule: Solid black
-            var hrPara = new Paragraph(new ParagraphProperties(new ParagraphBorders(new TopBorder() { Val = BorderValues.Single, Size = 12U, Color = "000000" })));
-            rightCell.Append(hrPara);
+            row.Append(leftCell);
 
-            rightCell.Append(CreateStyledParagraph("Eng. Nsengiyumva Juvenal", JustificationValues.Left, true, 22));
-            rightCell.Append(CreateStyledParagraph("Director for Admissions and Academic Records", JustificationValues.Left, false, 22));
-            rightCell.Append(CreateStyledParagraph("Adventist University of Central Africa", JustificationValues.Left, false, 22));
+            var rightCell = new TableCell(new TableCellProperties(new TableWidth { Type = TableWidthUnitValues.Pct, Width = "2500" }));
+            var qrBytes = GenerateQrCode($"https://auca.ac.rw/verify/{model.Record.StudentID}");
+            var qrPart = mainPart.AddImagePart(ImagePartType.Png);
+            using (var ms = new MemoryStream(qrBytes)) { qrPart.FeedData(ms); }
+            rightCell.Append(new Paragraph(new ParagraphProperties(new Justification() { Val = JustificationValues.Right }), new Run(new Drawing(GetImageElement(mainPart.GetIdOfPart(qrPart), 750000L, 750000L)))));
+            rightCell.Append(CreateStyledParagraph("Scan to verify my Validity", JustificationValues.Right, false, 18));
             row.Append(rightCell);
             
             table.Append(row);
             body.Append(table);
+
+            var hrPara = new Paragraph(new ParagraphProperties(new ParagraphBorders(new TopBorder() { Val = BorderValues.Single, Size = 4U, Color = "000000" })));
+            body.Append(hrPara);
+
+            body.Append(CreateStyledParagraph("Eng. Nsengiyumva Juvenal", JustificationValues.Left, true, 22));
+            body.Append(CreateStyledParagraph("Director for Admissions and Academic Records", JustificationValues.Left, false, 22));
+            body.Append(CreateStyledParagraph("Adventist University of Central Africa", JustificationValues.Left, false, 22));
         }
 
         private byte[] GenerateQrCode(string url)
