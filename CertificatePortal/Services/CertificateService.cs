@@ -49,26 +49,22 @@ namespace CertificatePortal.Services
 
         public async Task<byte[]> GeneratePdfAsync(CertificateViewModel model, string host)
         {
+            // Download browser engine ONLY when requested
+            await new PuppeteerSharp.BrowserFetcher().DownloadAsync();
+
             using var browser = await Puppeteer.LaunchAsync(new LaunchOptions { 
                 Headless = true,
-                Args = new[] { "--no-sandbox", "--disable-setuid-sandbox" } 
+                Args = new[] { "--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage" } 
             });
             using var page = await browser.NewPageAsync();
             
-            // Set viewport to A4
             await page.SetViewportAsync(new ViewPortOptions { Width = 794, Height = 1123 });
 
-            // On the server, we talk to ourselves via localhost:8080 (our standard port)
-            // If that fails, we fallback to the public host
-            string internalUrl = $"http://localhost:8080/Certificate/Preview/{model.Record.StudentID}";
+            // In production, we try to use the public host name provided by the request
+            string targetUrl = $"https://{host}/Certificate/Preview/{model.Record.StudentID}";
             
-            try {
-                await page.GoToAsync(internalUrl, WaitUntilNavigation.Networkidle0);
-            } catch {
-                await page.GoToAsync($"https://{host}/Certificate/Preview/{model.Record.StudentID}", WaitUntilNavigation.Networkidle0);
-            }
-            
-            await Task.Delay(500);
+            await page.GoToAsync(targetUrl, WaitUntilNavigation.Networkidle0);
+            await Task.Delay(1000);
 
             return await page.PdfDataAsync(new PdfOptions
             {
