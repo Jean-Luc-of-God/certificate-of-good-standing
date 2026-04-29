@@ -34,6 +34,26 @@ namespace CertificatePortal.Services
                 using (var wordDocument = WordprocessingDocument.Create(mem, WordprocessingDocumentType.Document))
                 {
                     var mainPart = wordDocument.AddMainDocumentPart();
+                    
+                    var styleDefinitionsPart = mainPart.AddNewPart<StyleDefinitionsPart>();
+                    var styles = new Styles();
+                    var docDefaults = new DocDefaults(
+                        new RunPropertiesDefault(
+                            new RunPropertiesBaseStyle(
+                                new RunFonts() 
+                                { 
+                                    Ascii = "Times New Roman", 
+                                    HighAnsi = "Times New Roman",
+                                    ComplexScript = "Times New Roman"
+                                },
+                                new FontSize() { Val = "22" },
+                                new FontSizeComplexScript() { Val = "22" }
+                            )
+                        )
+                    );
+                    styles.Append(docDefaults);
+                    styleDefinitionsPart.Styles = styles;
+
                     mainPart.Document = new Document();
                     var body = new Body();
                     mainPart.Document.Append(body);
@@ -211,11 +231,11 @@ namespace CertificatePortal.Services
             row.Append(leftCell);
             var rightCell = new TableCell();
             rightCell.AppendChild(new TableCellProperties(new TableWidth { Type = TableWidthUnitValues.Pct, Width = "4000" }, new TableCellVerticalAlignment { Val = TableVerticalAlignmentValues.Center }));
-            rightCell.Append(CreateStyledParagraph("Adventist University of Central Africa", JustificationValues.Center, true, 28));
-            rightCell.Append(CreateStyledParagraph("P.O. Box 2461 Kigali, Rwanda  |  www.auca.ac.rw  |  info@auca.ac.rw", JustificationValues.Center, false, 18));
-            rightCell.Append(CreateStyledParagraph("Directorate for Admissions and Academic Records", JustificationValues.Center, false, 22, italic: true));
-            rightCell.Append(CreateStyledParagraph("Mobile Phone: (+250)724 796 996 / 724 474 805/ 788 473 035", JustificationValues.Center, false, 18));
-            rightCell.Append(CreateStyledParagraph("Email: registrar@auca.ac.rw  ||  juvenal.nsengiyumva@auca.ac.rw", JustificationValues.Center, false, 18));
+            rightCell.Append(CreateStyledParagraph("Adventist University of Central Africa", JustificationValues.Center, true, 28, "Times New Roman"));
+            rightCell.Append(CreateStyledParagraph("P.O. Box 2461 Kigali, Rwanda  |  www.auca.ac.rw  |  info@auca.ac.rw", JustificationValues.Center, false, 18, "Times New Roman"));
+            rightCell.Append(CreateStyledParagraph("Directorate for Admissions and Academic Records", JustificationValues.Center, false, 22, "Times New Roman", italic: true));
+            rightCell.Append(CreateStyledParagraph("Mobile Phone: (+250)724 796 996 / 724 474 805/ 788 473 035", JustificationValues.Center, false, 18, "Times New Roman"));
+            rightCell.Append(CreateStyledParagraph("Email: registrar@auca.ac.rw  ||  juvenal.nsengiyumva@auca.ac.rw", JustificationValues.Center, false, 18, "Times New Roman"));
             row.Append(rightCell);
             table.Append(row);
             header.Append(table);
@@ -227,30 +247,47 @@ namespace CertificatePortal.Services
 
         private void AddContent(Body body, CertificateViewModel model)
         {
+            // After header table
+            body.Append(new Paragraph(new ParagraphProperties(new SpacingBetweenLines() { After = "200" })));
+
             body.Append(CreateStyledParagraph(model.CityAndDate, JustificationValues.Right, false, 22));
-            body.Append(new Paragraph(new Run(new Text(""))));
+            
             var titleP = CreateStyledParagraph("CERTIFICATE OF GOOD STANDING", JustificationValues.Center, true, 28);
             titleP.GetFirstChild<Run>().RunProperties.Append(new Underline() { Val = UnderlineValues.Single });
+            // Title spacing
+            titleP.GetFirstChild<ParagraphProperties>().Append(new SpacingBetweenLines() { Before = "400", After = "400" });
             body.Append(titleP);
-            body.Append(new Paragraph(new Run(new Text(""))));
+
             body.Append(CreateStyledParagraph($"I, the undersigned, Eng. Nsengiyumva Juvenal, Director for Admissions and Academic Records of Adventist University of Central Africa, hereby certify that:", JustificationValues.Both, false, 22));
+            
+            // One empty paragraph after intro
             body.Append(new Paragraph(new Run(new Text(""))));
+
             body.Append(CreateStyledParagraph(model.Record.StudentName, JustificationValues.Left, true, 24));
             body.Append(CreateStyledParagraph($"Born on {model.FormattedBirthDate}", JustificationValues.Left, false, 22));
             body.Append(CreateStyledParagraph($"has been a regular student of this University, registered under ID No. {model.Record.StudentID},", JustificationValues.Both, false, 22));
             body.Append(CreateStyledParagraph($"From {model.Record.StudiedFrom} to {model.Record.StudiedTo}.", JustificationValues.Left, false, 22));
+            
+            // One empty paragraph before fields
             body.Append(new Paragraph(new Run(new Text(""))));
-            body.Append(CreateLabeledParagraph("Year: ", model.Record.Year));
-            body.Append(CreateLabeledParagraph("Faculty: ", model.Record.Faculty));
-            body.Append(CreateLabeledParagraph("Major: ", model.Record.Major));
-            body.Append(CreateLabeledParagraph("Academic year: ", model.Record.AcademicYear));
-            body.Append(CreateLabeledParagraph("Validity: ", model.Record.AcademicYear));
-            body.Append(new Paragraph(new Run(new Text(""))));
+
+            body.Append(CreateMixedParagraph("Year: ", model.Record.Year));
+            body.Append(CreateMixedParagraph("Faculty: ", model.Record.Faculty));
+            body.Append(CreateMixedParagraph("Major: ", model.Record.Major));
+            body.Append(CreateMixedParagraph("Academic year: ", model.Record.AcademicYear));
+            body.Append(CreateMixedParagraph("Validity: ", model.Record.AcademicYear));
+            
+            // One empty paragraph after fields with After="200"
+            body.Append(new Paragraph(new ParagraphProperties(new SpacingBetweenLines() { After = "200" })));
+
             body.Append(CreateStyledParagraph("This certificate is issued for any legal or administrative purpose it may serve", JustificationValues.Left, false, 22, italic: true));
         }
 
         private void AddFooter(MainDocumentPart mainPart, Body body, CertificateViewModel model)
         {
+            // 4 empty paragraphs before the signature table
+            for (int i = 0; i < 4; i++) body.Append(new Paragraph(new Run(new Text(""))));
+
             var table = new Table();
             var tableProps = new TableProperties(new TableWidth() { Type = TableWidthUnitValues.Pct, Width = "5000" }, new TableBorders(new TopBorder { Val = BorderValues.None }, new BottomBorder { Val = BorderValues.None }, new LeftBorder { Val = BorderValues.None }, new RightBorder { Val = BorderValues.None }, new InsideHorizontalBorder { Val = BorderValues.None }, new InsideVerticalBorder { Val = BorderValues.None }));
             table.AppendChild(tableProps);
@@ -288,19 +325,61 @@ namespace CertificatePortal.Services
             return qrCode.GetGraphic(5);
         }
 
-        private Paragraph CreateStyledParagraph(string text, JustificationValues justify, bool bold, int fontSize, bool italic = false)
+        private Paragraph CreateStyledParagraph(string text, JustificationValues justify, bool bold, int fontSize, string fontName = "Times New Roman", bool italic = false)
         {
-            var rp = new RunProperties(new RunFonts() { Ascii = "Times New Roman", HighAnsi = "Times New Roman" }, new FontSize() { Val = fontSize.ToString() }, new Color() { Val = "000000" });
+            var run = new Run();
+            var rp = new RunProperties();
+            rp.Append(new RunFonts() 
+            { 
+                Ascii = fontName, 
+                HighAnsi = fontName,
+                ComplexScript = fontName
+            });
+            rp.Append(new FontSize() { Val = fontSize.ToString() });
+            rp.Append(new FontSizeComplexScript() { Val = fontSize.ToString() });
+            rp.Append(new Color() { Val = "000000" });
             if (bold) rp.Append(new Bold());
             if (italic) rp.Append(new Italic());
-            return new Paragraph(new ParagraphProperties(new Justification() { Val = justify }, new SpacingBetweenLines() { After = "0" }), new Run(rp, new Text(text) { Space = SpaceProcessingModeValues.Preserve }));
+            run.Append(rp);
+            run.Append(new Text(text) { Space = SpaceProcessingModeValues.Preserve });
+
+            var para = new Paragraph();
+            para.Append(new ParagraphProperties(
+                new Justification() { Val = justify },
+                new SpacingBetweenLines() { After = "0" }));
+            para.Append(run);
+            return para;
         }
 
-        private Paragraph CreateLabeledParagraph(string label, string value)
+        private Paragraph CreateMixedParagraph(string boldLabel, string normalValue, int fontSize = 22)
         {
-            var rpL = new RunProperties(new RunFonts() { Ascii = "Times New Roman" }, new FontSize() { Val = "22" }, new Color() { Val = "000000" }, new Bold());
-            var rpV = new RunProperties(new RunFonts() { Ascii = "Times New Roman" }, new FontSize() { Val = "22" }, new Color() { Val = "000000" });
-            return new Paragraph(new ParagraphProperties(new Justification() { Val = JustificationValues.Left }, new SpacingBetweenLines() { After = "0" }), new Run(rpL, new Text(label) { Space = SpaceProcessingModeValues.Preserve }), new Run(rpV, new Text(value)));
+            var para = new Paragraph();
+            para.Append(new ParagraphProperties(
+                new Justification() { Val = JustificationValues.Left },
+                new SpacingBetweenLines() { After = "0" }));
+
+            var boldRun = new Run();
+            var boldRp = new RunProperties();
+            boldRp.Append(new RunFonts() { Ascii = "Times New Roman", HighAnsi = "Times New Roman", ComplexScript = "Times New Roman" });
+            boldRp.Append(new FontSize() { Val = fontSize.ToString() });
+            boldRp.Append(new FontSizeComplexScript() { Val = fontSize.ToString() });
+            boldRp.Append(new Bold());
+            boldRp.Append(new Color() { Val = "000000" });
+            boldRun.Append(boldRp);
+            boldRun.Append(new Text(boldLabel) { Space = SpaceProcessingModeValues.Preserve });
+
+            var normalRun = new Run();
+            var normalRp = new RunProperties();
+            normalRp.Append(new RunFonts() { Ascii = "Times New Roman", HighAnsi = "Times New Roman", ComplexScript = "Times New Roman" });
+            normalRp.Append(new FontSize() { Val = fontSize.ToString() });
+            normalRp.Append(new FontSizeComplexScript() { Val = fontSize.ToString() });
+            normalRp.Append(new Color() { Val = "000000" });
+            normalRun.Append(normalRp);
+            normalRun.Append(new Text(normalValue) { Space = SpaceProcessingModeValues.Preserve });
+
+            para.Append(boldRun);
+            para.Append(normalRun);
+            return para;
         }
 
         private Drawing GetImageElement(string relationshipId, long w, long h)
