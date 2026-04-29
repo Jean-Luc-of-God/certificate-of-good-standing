@@ -49,4 +49,5 @@ app.MapHealthChecks("/health");
 app.MapControllerRoute(name: "default", pattern: "{controller=Certificate}/{action=Index}/{id?}");
 
 Log.Information("Starting AUCA Portal...");
-app.Run();
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Run($"http://0.0.0.0:{port}");
