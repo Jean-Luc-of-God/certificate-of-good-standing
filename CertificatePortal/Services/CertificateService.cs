@@ -86,42 +86,43 @@ namespace CertificatePortal.Services
             <html>
             <head>
                 <style>
+                    @import url('https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap');
                     @font-face {{ font-family: 'Edwardian Script ITC'; src: local('Edwardian Script ITC'), local('EdwardianScriptITC'); }}
                     body {{ font-family: 'Times New Roman', serif; padding: 0; margin: 0; background: white; color: black; line-height: 1.2; }}
                     .cert-card {{ width: 210mm; height: 297mm; padding: 1.5cm 2.2cm; box-sizing: border-box; position: relative; display: flex; flex-direction: column; overflow: hidden; }}
                     
-                    .header-table {{ width: 100%; border-bottom: 2.5px solid black; padding-bottom: 8px; margin-bottom: 20px; border-collapse: collapse; }}
+                    .header-table {{ width: 100%; border-bottom: 2.5px solid black; padding-bottom: 8px; margin-bottom: 15px; border-collapse: collapse; }}
                     .logo-cell {{ width: 95px; vertical-align: middle; text-align: left; }}
                     .logo-img {{ width: 90px; height: auto; }}
                     .header-text-cell {{ vertical-align: middle; text-align: left; padding-left: 15px; }}
                     .uni-title {{ margin: 0; font-size: 16pt; font-weight: 500; color: #003399; font-family: 'Times New Roman', serif; }}
                     .header-p {{ margin: 1px 0; font-size: 9pt; color: black; }}
-                    .cursive-line {{ font-family: 'Edwardian Script ITC', 'Brush Script MT', cursive; font-size: 22pt !important; margin: 2px 0 !important; font-weight: bold; color: black; line-height: 0.8; }}
+                    .dept-line {{ font-family: 'Edwardian Script ITC', 'Pinyon Script', cursive; font-size: 22pt !important; margin: 2px 0 !important; font-weight: bold; color: black; line-height: 0.8; text-align: center; }}
                     .email-link {{ color: #0000FF; text-decoration: underline; font-weight: normal; }}
                     .black-text {{ color: black !important; text-decoration: none !important; font-weight: normal; }}
                     
-                    .date {{ text-align: left; margin-bottom: 20px; font-size: 12pt; font-weight: normal; }}
-                    .title {{ text-align: center; margin: 25px 0; font-size: 13.5pt; font-weight: bold; text-decoration: none; text-transform: uppercase; }}
+                    .date {{ text-align: left; margin-bottom: 15px; font-size: 12pt; font-weight: normal; }}
+                    .title {{ text-align: center; margin: 20px 0; font-size: 13.5pt; font-weight: bold; text-decoration: none; text-transform: uppercase; }}
 
                     .body-p {{ text-align: justify; font-size: 12pt; line-height: 1.5; margin: 8px 0; }}
-                    .student-name {{ font-size: 14pt; font-weight: bold; margin: 15px 0 5px 0; }}
+                    .student-name {{ font-size: 14pt; font-weight: bold; margin: 10px 0 5px 0; text-align: left; }}
                     .no-wrap {{ white-space: nowrap; }}
-                    .field {{ margin: 3px 0; font-size: 12pt; }}
+                    .field {{ margin: 2px 0; font-size: 12pt; }}
                     .field-label {{ font-weight: normal; }}
                     .field-value {{ font-weight: bold; }}
                     
-                    .footer-container {{ margin-top: auto; width: 100%; padding-bottom: 0.5cm; }}
+                    .footer-container {{ margin-top: 40px; width: 100%; padding-bottom: 0.5cm; }}
                     .footer-table {{ width: 100%; border-collapse: collapse; }}
                     .footer-cell-left {{ width: 60%; vertical-align: bottom; text-align: left; }}
                     .footer-cell-right {{ width: 40%; vertical-align: bottom; text-align: right; }}
                     
                     .sig-img {{ width: 165px; height: auto; margin-bottom: -5px; display: block; }}
                     .sig-line {{ border-top: 1.5px solid black; width: 330px; margin: 5px 0; }}
-                    .director-info {{ line-height: 1.4; font-size: 1.15rem; text-align: left; }}
+                    .director-info {{ line-height: 1.4; font-size: 11pt; text-align: left; }}
                     .dir-name {{ font-weight: bold; }}
                     
                     .qr-img {{ width: 105px; height: 105px; display: block; margin-left: auto; }}
-                    .verify-text {{ font-size: 0.9rem; margin-top: 5px; text-align: center; width: 105px; float: right; font-weight: normal; }}
+                    .verify-text {{ font-size: 9pt; margin-top: 5px; text-align: center; width: 105px; float: right; font-weight: normal; }}
                 </style>
             </head>
             <body>
@@ -132,7 +133,7 @@ namespace CertificatePortal.Services
                             <td class='header-text-cell'>
                                 <h2 class='uni-title'>Adventist University of Central Africa</h2>
                                 <p class='header-p'>P.O. Box 2461 Kigali, Rwanda | www.auca.ac.rw | info@auca.ac.rw</p>
-                                <p class='cursive-line'>Directorate for Admissions and Academic Records</p>
+                                <p class='dept-line'>Directorate for Admissions and Academic Records</p>
                                 <p class='header-p' style='margin-top: 8px;'>Mobile Phone : (+250) 724 796 996 / 724 474 805 / 788 473 035</p>
                                 <p class='header-p'><span class='black-text'>Email: </span><a class='email-link'>registrar@auca.ac.rw</a> <span class='black-text'> || </span> <a class='email-link'>juvenal.nsengiyumva@auca.ac.rw</a></p>
                             </td>
